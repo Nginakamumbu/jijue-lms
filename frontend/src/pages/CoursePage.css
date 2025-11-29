@@ -1,0 +1,559 @@
+/* --- Color Variables & Fonts --- */
+:root {
+  /* Primary Theme Colors (TechHealth Purple) */
+  --color-primary-default: #C8A2C8;
+  --color-primary-dark: #A97FA9;
+  --color-primary-light: #E6D9E6;
+
+  /* Secondary Accent Color (TechHealth Blue) */
+  --color-secondary-default: #4A90E2;
+
+  /* Light Theme Colors */
+  --color-bg-light: #F9FAFB;
+  --color-surface-light: #FFFFFF;
+  --color-text-light: #111827;
+  --color-text-muted-light: #6B7280;
+  --color-border-light: #E5E7EB; /* gray-200 */
+}
+
+/* Dark Mode Variables (Synced with .dark-mode class) */
+.dark-mode {
+  --color-bg-dark: #111827;
+  --color-surface-dark: #1F2937;
+  --color-text-dark: #F9FAFB;
+  --color-text-muted-dark: #9CA3AF;
+  --color-border-dark: #374151; /* gray-700 */
+}
+
+/* Typography */
+body {
+  font-family: 'Inter', sans-serif;
+}
+.logo, .card-title-display, .course-title-display {
+  font-family: 'DM Serif Display', serif;
+}
+
+/* --- Base/Utility Styles --- */
+
+.app-container {
+  min-height: 100vh;
+  background-color: var(--color-bg-light);
+  color: var(--color-text-light);
+  transition: background-color 0.3s, color 0.3s;
+}
+.dark-mode .app-container {
+  background-color: var(--color-bg-dark);
+  color: var(--color-text-dark);
+}
+
+.icon-sm { width: 1.25rem; height: 1.25rem; } /* w-5 h-5 */
+.icon-lg { width: 1.5rem; height: 1.5rem; } /* w-6 h-6 */
+.avatar-sm { height: 2.5rem; width: 2.5rem; border-radius: 50%; object-fit: cover; } /* h-10 w-10 */
+.avatar-md { height: 4rem; width: 4rem; border-radius: 50%; object-fit: cover; } /* h-16 w-16 */
+
+.card {
+  padding: 1.5rem; /* p-6 */
+  border-radius: 0.75rem; /* rounded-xl */
+  box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1); /* shadow-sm */
+  border: 1px solid var(--color-border-light);
+  background-color: var(--color-surface-light);
+  transition: border-color 0.3s, background-color 0.3s;
+}
+.dark-mode .card {
+  border-color: var(--color-border-dark);
+  background-color: var(--color-surface-dark);
+}
+
+.card-title-display {
+  font-size: 1.25rem; /* text-xl */
+  font-weight: 700; /* font-bold */
+  margin-bottom: 1rem; /* mb-4 */
+}
+
+/* --- Header Section --- */
+
+.header {
+  background-color: var(--color-surface-light);
+  box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05); /* shadow-sm */
+  position: sticky;
+  top: 0;
+  z-index: 40;
+}
+.dark-mode .header {
+  background-color: var(--color-surface-dark);
+}
+
+.header-container {
+  max-width: 80rem; /* max-w-7xl */
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: 1rem;
+  padding-right: 1rem;
+}
+@media (min-width: 640px) { /* sm:px-6 */
+  .header-container {
+    padding-left: 1.5rem;
+    padding-right: 1.5rem;
+  }
+}
+@media (min-width: 1024px) { /* lg:px-8 */
+  .header-container {
+    padding-left: 2rem;
+    padding-right: 2rem;
+  }
+}
+
+.header-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  height: 4rem; /* h-16 */
+}
+
+.logo {
+  display: inline-flex;
+  align-items: center;
+  font-size: 1.5rem; /* text-2xl */
+  font-weight: 700;
+  color: var(--color-text-light);
+  text-decoration: none;
+}
+.dark-mode .logo {
+  color: var(--color-text-dark);
+}
+.logo-part-1 {
+  color: var(--color-secondary-default); /* Blue */
+}
+.logo-part-2 {
+  color: var(--color-primary-default); /* Purple */
+}
+
+.nav {
+  display: none;
+  align-items: center;
+  gap: 2rem; /* space-x-8 */
+}
+@media (min-width: 768px) {
+  .nav { display: flex; } /* md:flex */
+}
+
+.nav-link {
+  font-weight: 500;
+  color: var(--color-text-muted-light);
+  text-decoration: none;
+  transition: color 0.15s ease-in-out;
+}
+.dark-mode .nav-link {
+  color: var(--color-text-muted-dark);
+}
+.nav-link:hover {
+  color: var(--color-primary-default);
+}
+.dark-mode .nav-link:hover {
+  color: var(--color-primary-default);
+}
+.nav-link-active {
+  color: var(--color-primary-default);
+}
+
+.user-controls {
+  display: flex;
+  align-items: center;
+  gap: 1rem; /* space-x-4 */
+}
+
+.dark-mode-toggle {
+  padding: 0.5rem; /* p-2 */
+  border-radius: 9999px; /* rounded-full */
+  color: var(--color-text-muted-light);
+  background: none;
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.15s ease-in-out, color 0.15s ease-in-out;
+}
+.dark-mode-toggle:hover {
+  background-color: #F3F4F6; /* gray-100 */
+}
+.dark-mode .dark-mode-toggle {
+  color: var(--color-text-muted-dark);
+}
+.dark-mode .dark-mode-toggle:hover {
+  background-color: #374151; /* gray-700 */
+}
+
+/* --- Main Content Layout --- */
+
+.main-content {
+  padding-top: 2.5rem; /* py-10 (top) */
+  padding-bottom: 2.5rem; /* py-10 (bottom) */
+}
+
+.main-content-container {
+  max-width: 80rem; /* max-w-7xl */
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: 1rem;
+  padding-right: 1rem;
+}
+@media (min-width: 640px) {
+  .main-content-container {
+    padding-left: 1.5rem;
+    padding-right: 1.5rem;
+  }
+}
+@media (min-width: 1024px) {
+  .main-content-container {
+    padding-left: 2rem;
+    padding-right: 2rem;
+  }
+}
+
+.course-layout {
+  display: grid;
+  grid-template-columns: 1fr; /* Default: single column */
+  gap: 2rem; /* gap-8 */
+}
+@media (min-width: 1024px) { /* lg:grid-cols-3 */
+  .course-layout {
+    grid-template-columns: 2fr 1fr;
+    gap: 3rem; /* lg:gap-12 */
+  }
+}
+
+.course-main-column {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem; /* space-y-8 */
+}
+
+.course-sidebar {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem; /* space-y-8 */
+}
+
+/* --- Course Header Card --- */
+
+.course-header-card {
+  padding: 1.5rem; /* p-6 */
+}
+@media (min-width: 768px) {
+  .course-header-card {
+    padding: 2rem; /* md:p-8 */
+  }
+}
+
+.course-tag {
+  display: inline-block;
+  background-color: var(--color-primary-light);
+  color: var(--color-primary-dark);
+  font-weight: 600; /* font-semibold */
+  font-size: 0.875rem; /* text-sm */
+  padding: 0.25rem 0.75rem; /* px-3 py-1 */
+  border-radius: 9999px; /* rounded-full */
+  margin-bottom: 1rem; /* mb-4 */
+}
+
+.course-title-display {
+  font-size: 2.25rem; /* text-4xl */
+  line-height: 1.25; /* leading-tight */
+  font-weight: 700;
+  color: var(--color-text-light);
+}
+@media (min-width: 768px) {
+  .course-title-display {
+    font-size: 3rem; /* md:text-5xl */
+  }
+}
+.dark-mode .course-title-display {
+  color: var(--color-text-dark);
+}
+
+.course-description {
+  margin-top: 1rem; /* mt-4 */
+  font-size: 1.125rem; /* text-lg */
+  color: var(--color-text-muted-light);
+}
+.dark-mode .course-description {
+  color: var(--color-text-muted-dark);
+}
+
+.course-meta {
+  margin-top: 1.5rem; /* mt-6 */
+  display: flex;
+  align-items: center;
+  gap: 1rem; /* space-x-4 */
+  font-size: 0.875rem; /* text-sm */
+  color: var(--color-text-muted-light);
+}
+.dark-mode .course-meta {
+  color: var(--color-text-muted-dark);
+}
+
+.meta-item {
+  display: flex;
+  align-items: center;
+  gap: 0.375rem; /* space-x-1.5 */
+}
+
+.meta-icon {
+  color: var(--color-primary-default);
+}
+
+/* --- Learning Outcomes Card --- */
+
+.outcomes-card {
+  padding: 1.5rem;
+}
+@media (min-width: 768px) {
+  .outcomes-card {
+    padding: 2rem;
+  }
+}
+
+.outcomes-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem; /* space-y-3 */
+}
+
+.outcome-item {
+  display: flex;
+  align-items: flex-start;
+}
+
+.outcome-icon {
+  color: var(--color-secondary-default);
+  margin-right: 0.75rem; /* mr-3 */
+  margin-top: 0.25rem; /* mt-1 */
+  flex-shrink: 0;
+}
+
+.outcome-text {
+  flex: 1;
+}
+
+/* --- Curriculum Card --- */
+
+.curriculum-card {
+  padding: 1.5rem;
+}
+@media (min-width: 768px) {
+  .curriculum-card {
+    padding: 2rem;
+  }
+}
+
+.curriculum-modules {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem; /* space-y-4 */
+}
+
+.module-container {
+  border: 1px solid var(--color-border-light);
+  border-radius: 0.5rem; /* rounded-lg */
+}
+.dark-mode .module-container {
+  border-color: var(--color-border-dark);
+}
+
+.module-header {
+  padding: 1rem; /* p-4 */
+  background-color: #F9FAFB; /* gray-50 */
+  border-top-left-radius: 0.5rem;
+  border-top-right-radius: 0.5rem;
+}
+.dark-mode .module-header {
+  background-color: #1F293780; /* gray-800/50 */
+}
+
+.module-title {
+  font-weight: 700; /* font-bold */
+  font-size: 1.125rem; /* text-lg */
+}
+
+.module-lessons {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  border-top: 1px solid var(--color-border-light);
+  display: flex;
+  flex-direction: column;
+  border-bottom-left-radius: 0.5rem;
+  border-bottom-right-radius: 0.5rem;
+}
+.dark-mode .module-lessons {
+  border-color: var(--color-border-dark);
+}
+
+.module-lessons > li:not(:last-child) {
+    border-bottom: 1px solid var(--color-border-light);
+}
+.dark-mode .module-lessons > li:not(:last-child) {
+    border-bottom: 1px solid var(--color-border-dark);
+}
+
+.lesson-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem; /* p-4 */
+}
+
+.lesson-info {
+  display: flex;
+  align-items: center;
+}
+
+.lesson-icon {
+  margin-right: 0.75rem; /* mr-3 */
+}
+
+.lesson-title {
+  /* Default text style */
+}
+
+.lesson-duration {
+  font-size: 0.875rem; /* text-sm */
+  color: var(--color-text-muted-light);
+}
+.dark-mode .lesson-duration {
+  color: var(--color-text-muted-dark);
+}
+
+/* Lesson Status Styles */
+.lesson-completed .lesson-icon {
+  color: #10B981; /* green-500 */
+}
+
+.lesson-current {
+  background-color: #E6D9E6; /* primary-light/30: approx */
+}
+.dark-mode .lesson-current {
+  background-color: #A97FA933; /* A97FA9/20: approx */
+}
+.lesson-current .lesson-icon {
+  color: var(--color-primary-default);
+}
+.lesson-current .lesson-title {
+  font-weight: 600; /* font-semibold */
+  color: var(--color-primary-dark);
+}
+.dark-mode .lesson-current .lesson-title {
+  color: var(--color-primary-light);
+}
+.lesson-current-icon svg {
+  animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite; /* animate-pulse */
+}
+
+.lesson-locked .lesson-icon {
+  color: var(--color-text-muted-light);
+}
+.dark-mode .lesson-locked .lesson-icon {
+  color: var(--color-text-muted-dark);
+}
+
+/* --- Sidebar Cards --- */
+
+/* Progress Card */
+.progress-card {
+  /* ... card styling ... */
+}
+
+.progress-bar-background {
+  width: 100%;
+  background-color: #E5E7EB; /* gray-200 */
+  border-radius: 9999px; /* rounded-full */
+  height: 0.625rem; /* h-2.5 */
+}
+.dark-mode .progress-bar-background {
+  background-color: #374151; /* gray-700 */
+}
+
+.progress-bar-fill {
+  background-color: var(--color-secondary-default);
+  height: 0.625rem;
+  border-radius: 9999px;
+  transition: width 0.5s ease-out; /* transition-all duration-500 ease-out */
+}
+
+.progress-text {
+  text-align: center;
+  margin-top: 0.5rem; /* mt-2 */
+  font-size: 0.875rem; /* text-sm */
+  color: var(--color-text-muted-light);
+}
+.dark-mode .progress-text {
+  color: var(--color-text-muted-dark);
+}
+
+.continue-button {
+  width: 100%;
+  margin-top: 1.5rem; /* mt-6 */
+  display: flex;
+  justify-content: center;
+  padding: 0.75rem 1rem; /* py-3 px-4 */
+  border: 1px solid transparent;
+  border-radius: 0.5rem; /* rounded-lg */
+  box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05); /* shadow-sm */
+  font-size: 1.125rem; /* text-lg */
+  font-weight: 700;
+  color: #FFFFFF;
+  background-color: var(--color-primary-default);
+  transition: background-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+  cursor: pointer;
+}
+.continue-button:hover {
+  background-color: var(--color-primary-dark);
+}
+.continue-button:focus {
+  outline: none;
+  box-shadow: 0 0 0 4px #F9FAFB, 0 0 0 6px var(--color-primary-default); /* ring-2 ring-offset-2 */
+}
+.dark-mode .continue-button:focus {
+  box-shadow: 0 0 0 4px #111827, 0 0 0 6px var(--color-primary-default);
+}
+
+/* Instructor Card */
+.instructor-card {
+  /* ... card styling ... */
+}
+
+.instructor-details {
+  display: flex;
+  align-items: center;
+  gap: 1rem; /* space-x-4 */
+}
+
+.instructor-name {
+  font-weight: 700; /* font-bold */
+  font-size: 1.125rem; /* text-lg */
+}
+
+.instructor-title {
+  font-size: 0.875rem; /* text-sm */
+  color: var(--color-primary-default);
+}
+
+.instructor-bio {
+  margin-top: 1rem; /* mt-4 */
+  font-size: 0.875rem; /* text-sm */
+  color: var(--color-text-muted-light);
+}
+.dark-mode .instructor-bio {
+  color: var(--color-text-muted-dark);
+}
+
+/* Keyframes for pulse effect */
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}

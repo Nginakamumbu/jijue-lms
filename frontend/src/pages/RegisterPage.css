@@ -1,0 +1,352 @@
+/* --------------------------------
+   0. IMPORTS & GLOBAL SETUP
+   -------------------------------- */
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap');
+
+/* Default Light Mode Variables */
+:root {
+    --primary-color: #C8A2C8; 
+    --bg-dark-primary: #121212; 
+    --bg-dark-secondary: #1e1e1e; 
+    --bg-light: #ffffff;
+    --color-text-dark: #f4f4f4; 
+    --color-text-light: #111827; 
+
+    /* New: Light Purple background for fact card */
+    --fact-card-bg-light: #f3e6f7; /* Very light purple */
+    --fact-card-bg-dark: #3a2e3a; /* Darker purple for dark mode */
+}
+
+/* Global Body Reset */
+body {
+    margin: 0;
+    font-family: 'Poppins', sans-serif;
+    transition: background-color 0.3s, color 0.3s;
+    background-color: var(--bg-light);
+    color: var(--color-text-light);
+}
+
+/* Dark Mode Overrides */
+.dark-mode {
+    background-color: var(--bg-dark-primary);
+    color: var(--color-text-dark);
+}
+
+.dark-mode .form-title {
+    color: var(--color-text-dark);
+}
+.dark-mode .form-input {
+    border-color: #555;
+    color: var(--color-text-dark);
+    background-color: var(--bg-dark-secondary);
+}
+
+/* Ensure the side panel/form wrapper colors align with dark mode */
+.dark-mode .side-panel {
+    background-color: var(--bg-dark-primary); 
+}
+.dark-mode .form-panel-wrapper {
+    background-color: var(--bg-dark-secondary); 
+}
+
+/* --------------------------------
+   1. PAGE LAYOUT AND CONTAINERS
+   -------------------------------- */
+
+.register-layout-container {
+    min-height: 100vh;
+    display: flex;
+    overflow: hidden; 
+}
+
+/* --- Left Panel: Branding / Facts --- */
+.side-panel {
+    flex: 0 0 40%; 
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between; 
+    align-items: center;
+    padding: 2.5rem 3rem;
+    background-color: var(--bg-dark-primary); 
+    color: var(--color-text-dark);
+    text-align: center;
+}
+
+/* --- Right Panel: Form --- */
+.form-panel-wrapper {
+    flex: 1; 
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+    padding: 2rem;
+    background-color: var(--bg-dark-secondary);
+}
+
+.form-content-area {
+    width: 100%;
+    max-width: 400px; 
+}
+
+/* --------------------------------
+   2. HEADER, LOGO, AND FOOTER
+   -------------------------------- */
+
+.header-logo-group {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    margin-bottom: 2rem;
+    text-align: center;
+}
+
+.logo-icon-wrapper a {
+    text-decoration: none;
+    line-height: 0; 
+}
+
+.logo-icon-light {
+    width: 32px;
+    height: 32px;
+    margin-right: 10px;
+}
+
+.logo-text {
+    font-size: 1.5rem;
+    font-weight: 700;
+}
+
+.side-panel-footer {
+    width: 100%;
+    font-size: 0.8rem;
+    color: #999;
+    margin-top: 2rem;
+}
+
+
+/* --------------------------------
+   3. FORM HEADER & TITLE
+   -------------------------------- */
+
+.form-header {
+    margin-bottom: 2rem;
+    text-align: left;
+}
+
+.form-title {
+    font-size: 2rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+    color: var(--color-text-light); /* Default for light mode */
+}
+
+.form-subtitle {
+    color: #999;
+    margin: 0;
+}
+
+
+/* --------------------------------
+   4. INPUTS AND FIELDS
+   -------------------------------- */
+
+.input-form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+}
+
+.input-label {
+    display: block;
+    margin-bottom: 0.4rem;
+    font-size: 0.9rem;
+    font-weight: 600;
+}
+
+.form-input {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    border: 1px solid #ddd; /* Lighter border for light mode */
+    border-radius: 6px;
+    background-color: var(--bg-light); /* Light background for inputs in light mode */
+    color: var(--color-text-light);
+    box-sizing: border-box;
+    transition: border-color 0.3s, box-shadow 0.3s;
+}
+
+.form-input:focus {
+    outline: none;
+    border-color: var(--primary-color) !important;
+    box-shadow: 0 0 0 2px var(--primary-color);
+}
+
+
+/* --------------------------------
+   5. BUTTONS AND LINKS
+   -------------------------------- */
+
+.submit-button {
+    width: 100%;
+    padding: 0.8rem 1rem;
+    margin-top: 1rem;
+    border: none;
+    border-radius: 6px;
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: white; 
+    cursor: pointer;
+    transition: background-color 0.3s, transform 0.2s;
+}
+
+.submit-button:hover {
+    filter: brightness(1.1);
+    transform: translateY(-1px);
+}
+
+.login-link-wrapper {
+    text-align: center;
+    margin-top: 1.5rem;
+    font-size: 0.9rem;
+}
+
+.login-link-text {
+    color: #999;
+}
+
+.login-link-anchor {
+    text-decoration: none;
+    font-weight: 600;
+    margin-left: 0.5rem;
+    transition: color 0.3s;
+}
+
+.login-link-anchor:hover {
+    text-decoration: underline;
+    opacity: 0.8;
+}
+
+/* Dark Mode Toggle */
+.dark-mode-toggle {
+    position: absolute;
+    top: 1.5rem;
+    right: 2rem;
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: var(--color-text-dark); 
+    padding: 0.5rem;
+    transition: color 0.3s;
+}
+
+.dark-mode-toggle:hover {
+    color: var(--primary-color);
+}
+
+/* --------------------------------
+   6. ROTATING FACT CARD STYLES (UPDATED)
+   -------------------------------- */
+
+.fact-rotation-area {
+    width: 100%;
+    max-width: 450px; /* Slightly wider to accommodate larger text */
+    margin: auto 0; 
+    padding: 0 1rem;
+}
+
+.fact-card {
+    /* --- New Background Color --- */
+    background-color: var(--fact-card-bg-light); /* Light purple background */
+    border-radius: 8px;
+    padding: 2rem; /* Increased padding */
+    border: 2px solid var(--primary-color); /* Border around the whole card */
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2); /* Enhanced shadow */
+    opacity: 1;
+    transition: opacity 0.5s ease-in-out, background-color 0.3s, color 0.3s; 
+    text-align: left;
+    color: var(--color-text-light); /* Default text color for light card */
+}
+
+.dark-mode .fact-card {
+    background-color: var(--fact-card-bg-dark); /* Dark purple background */
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.5);
+    color: var(--color-text-dark); /* Text color in dark mode */
+}
+
+.fact-header {
+    display: flex;
+    align-items: center;
+    margin-bottom: 1rem; /* Increased margin */
+}
+
+.fact-title {
+    margin: 0;
+    margin-left: 0.75rem; /* Space from icon */
+    font-size: 1.25rem; /* Larger title font */
+    font-weight: 700;
+    color: var(--primary-color);
+}
+
+/* --- Blockquote Styling for Quotes --- */
+.fact-quote {
+    font-size: 1.5rem; /* Much larger font size for the quote */
+    line-height: 1.4;
+    font-style: italic;
+    margin: 0; /* Remove default blockquote margin */
+    padding: 0;
+    position: relative;
+    color: var(--color-text-light);
+}
+
+.dark-mode .fact-quote {
+    color: var(--color-text-dark);
+}
+
+/* Optional: Add quote marks visually if not in content */
+.fact-quote::before {
+    content: "“";
+    font-size: 3rem;
+    color: var(--primary-color);
+    position: absolute;
+    left: -1rem;
+    top: -0.5rem;
+    opacity: 0.6;
+}
+.fact-quote::after {
+    content: "”";
+    font-size: 3rem;
+    color: var(--primary-color);
+    position: absolute;
+    right: -1rem;
+    bottom: -1rem;
+    opacity: 0.6;
+}
+
+
+/* --------------------------------
+   7. RESPONSIVENESS (Mobile First)
+   -------------------------------- */
+
+@media (max-width: 900px) {
+    .side-panel {
+        display: none; /* Hide the side panel on smaller screens */
+    }
+
+    .register-layout-container {
+        flex-direction: column;
+    }
+
+    .form-panel-wrapper {
+        min-height: 100vh;
+        align-items: flex-start; /* Start content near the top */
+        padding-top: 4rem;
+    }
+
+    .form-content-area {
+        max-width: 90%; /* Adjust for smaller screens */
+    }
+
+    .dark-mode-toggle {
+        right: 1rem;
+    }
+}

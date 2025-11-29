@@ -1,0 +1,265 @@
+/* --- Font Imports --- */
+@import url('https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Poppins:wght@400;500;600;700&display=swap');
+
+/* --- Color Variables & Fonts --- */
+:root {
+    /* Colors based on CUSTOMSTYLES constant */
+    --color-primary-default: #C895FF; /* Purple */
+    --color-blue-500: #3B82F6; /* Logo Blue */
+
+    /* Light Theme Colors */
+    --color-light-bg-base: #FFFFFF; /* CUSTOMSTYLES.backgroundLight */
+    --color-light-text-base: #1F2937; /* CUSTOMSTYLES.textLight */
+    --color-secondary-btn-bg: #E2E8F0; /* slate-200 */
+    --color-text-on-primary-btn: #000000;
+}
+
+/* Dark Mode Variables (Synced with .dark-mode class) */
+.dark-mode {
+    --color-dark-bg-base: #121212; /* CUSTOMSTYLES.backgroundDark */
+    --color-dark-text-base: #FFFFFF; /* CUSTOMSTYLES.textDark */
+    --color-header-bg-dark-opacity: rgb(31 41 55 / 0.3); /* gray-800/30 */
+    --color-header-hover-dark-opacity: rgb(31 41 55 / 0.5); /* gray-800/50 */
+    --color-text-on-dark-header: #FFFFFF; /* White on the dark header toggle */
+}
+
+/* --- Base/Utility Styles --- */
+
+.app-root-container {
+    font-family: 'Poppins', sans-serif;
+}
+
+.landing-page-wrapper {
+    position: relative;
+    min-height: 100vh;
+    -webkit-font-smoothing: antialiased;
+    color: var(--color-light-text-base); /* Default light text */
+    background-color: var(--color-light-bg-base); /* Default light background */
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+.dark-mode .landing-page-wrapper {
+    color: var(--color-dark-text-base);
+    background-color: var(--color-dark-bg-base);
+}
+
+.icon-lg { width: 1.5rem; height: 1.5rem; } /* w-6 h-6 */
+
+/* --- Background and Overlay --- */
+
+.background-image-container {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+}
+
+.background-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.gradient-overlay {
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    content: "";
+    transition: background 0.3s ease-in-out;
+}
+
+/* Light Mode Gradient */
+.landing-page-wrapper:not(.dark-mode) .gradient-overlay {
+    /* Gradient adapted from original inline style logic */
+    background: linear-gradient(to right,
+        rgb(255 255 255 / 1) 0%,
+        rgb(255 255 255 / 1) 25%,
+        rgb(255 255 255 / 0.5) 75%,
+        rgb(255 255 255 / 0) 100%);
+}
+
+/* Dark Mode Gradient */
+.dark-mode .gradient-overlay {
+    /* Gradient adapted from original inline style logic */
+    background: linear-gradient(to right,
+        rgb(18 18 18 / 1) 0%,
+        rgb(18 18 18 / 1) 25%,
+        rgb(18 18 18 / 0.5) 75%,
+        rgb(18 18 18 / 0) 100%);
+}
+
+/* --- Header Section --- */
+
+.header-bar {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    padding: 1.5rem; /* p-6 */
+    z-index: 20;
+}
+@media (min-width: 640px) {
+    .header-bar {
+        padding: 2rem; /* sm:p-8 */
+    }
+}
+
+.header-content-container {
+    max-width: 1280px; /* container mx-auto */
+    margin: 0 auto;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.logo-group {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem; /* gap-2 */
+}
+
+.logo-icon {
+    height: 2rem; /* h-8 */
+    width: 2rem; /* w-8 */
+    color: var(--color-blue-500);
+}
+
+.logo-text {
+    font-weight: 700;
+    font-size: 1.25rem; /* xl */
+    color: var(--color-blue-500);
+}
+
+.dark-mode-toggle {
+    padding: 0.5rem;
+    border-radius: 9999px; /* rounded-full */
+    transition: background-color 0.3s, color 0.3s;
+    backdrop-filter: blur(4px); /* backdrop-blur-sm */
+    border: none;
+    cursor: pointer;
+    
+    /* Default Styling (on the light background) */
+    color: var(--color-text-on-dark-header); /* Always white/light on dark header area */
+    background-color: rgb(255 255 255 / 0.1); /* white/10 */
+}
+
+.dark-mode-toggle:hover {
+    background-color: rgb(255 255 255 / 0.2); /* hover:bg-white/20 */
+}
+
+/* Dark Mode overrides for the toggle button */
+.dark-mode .dark-mode-toggle {
+    background-color: var(--color-header-bg-dark-opacity); 
+}
+.dark-mode .dark-mode-toggle:hover {
+    background-color: var(--color-header-hover-dark-opacity); 
+}
+
+/* --- Hero Section --- */
+
+.hero-section {
+    position: relative;
+    z-index: 10;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    min-height: 100vh;
+}
+
+.hero-content-container {
+    max-width: 1280px; /* container mx-auto */
+    margin: 0 auto;
+    padding: 6rem 1.5rem; /* py-24 px-6 */
+}
+@media (min-width: 640px) {
+    .hero-content-container {
+        padding: 8rem 1.5rem; /* sm:py-32 */
+    }
+}
+
+.hero-text-area {
+    max-width: 30rem; /* max-w-xl */
+}
+
+.text-alignment-wrapper {
+    text-align: center;
+}
+@media (min-width: 640px) {
+    .text-alignment-wrapper {
+        text-align: left; /* sm:text-left */
+    }
+}
+
+.hero-title {
+    font-family: 'Libre Baskerville', serif;
+    font-size: 3rem; /* 5xl */
+    font-weight: 700;
+    letter-spacing: -0.025em; /* tracking-tight */
+    color: #FFFFFF; /* Always white for contrast on background image */
+    filter: drop-shadow(0 4px 3px rgb(0 0 0 / 0.1)); /* drop-shadow-lg */
+}
+@media (min-width: 768px) {
+    .hero-title {
+        font-size: 4.5rem; /* md:text-7xl */
+    }
+}
+
+.hero-subtitle {
+    margin-top: 2rem; /* mt-8 */
+    font-size: 1.25rem; /* xl */
+    font-weight: 600;
+    filter: drop-shadow(0 1px 2px rgb(0 0 0 / 0.1)); /* drop-shadow-md */
+    /* Color set inline in JSX */
+}
+
+.hero-buttons {
+    margin-top: 3rem; /* mt-12 */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem; /* gap-4 */
+    justify-content: center;
+}
+@media (min-width: 640px) {
+    .hero-buttons {
+        flex-direction: row; /* sm:flex-row */
+        justify-content: flex-start; /* sm:justify-start */
+    }
+}
+
+.btn {
+    width: 100%;
+    text-align: center;
+    font-weight: 700;
+    padding: 0.75rem 3rem; /* py-3 px-12 */
+    border-radius: 0.5rem; /* rounded-lg */
+    box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1); /* shadow-xl */
+    transition: opacity 0.3s, background-color 0.3s, transform 0.3s;
+    text-decoration: none;
+    border: none;
+    cursor: pointer;
+}
+@media (min-width: 640px) {
+    .btn {
+        width: auto; /* sm:w-auto */
+    }
+}
+.btn:hover {
+    transform: scale(1.01);
+}
+
+/* Primary Button */
+.btn-primary {
+    color: var(--color-text-on-primary-btn);
+    /* Background color is set dynamically via inline style in JSX */
+}
+.btn-primary:hover {
+    opacity: 0.9;
+}
+
+/* Secondary Button */
+.btn-secondary {
+    background-color: var(--color-secondary-btn-bg);
+    color: var(--color-text-on-primary-btn);
+}
+.btn-secondary:hover {
+    background-color: #CBD5E1; /* slate-300 */
+}

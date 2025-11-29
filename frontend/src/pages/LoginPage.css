@@ -1,0 +1,275 @@
+/* --- Font Imports --- */
+@import url('https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Inter:wght@400;500;600;700&display=swap');
+
+/* --- Color Variables & Fonts --- */
+:root {
+    /* Base Colors */
+    --color-primary-default: #C8A2C8; /* Custom Primary Color */
+    --color-blue-600: #2563EB; /* Tailwind blue-600 */
+    
+    /* Light Theme (Default) */
+    --color-surface-light: #FFFFFF;
+    --color-background-light: #FFFFFF;
+    --color-text-light: #1F2937; /* gray-800/900 approximation */
+    --color-text-muted-light: #4B5563; /* gray-600 */
+    --color-input-bg-light: #F9FAFB; /* gray-50 */
+    --color-input-border-light: #D1D5DB; /* gray-300 */
+    --color-card-border-light: #E5E7EB; /* gray-200 */
+}
+
+/* Dark Mode Variables */
+.dark-mode {
+    --color-background-dark: #111827; /* Specific dark background */
+    --color-surface-dark: #1F2937; /* Form card background */
+    --color-text-dark: #FFFFFF;
+    --color-text-muted-dark: #9CA3AF; /* gray-400 */
+    --color-input-bg-dark: #374151; /* gray-700 */
+    --color-input-border-dark: #4B5563; /* gray-600 */
+    --color-card-border-dark: #374151; /* gray-700 */
+}
+
+/* --- Base Styles --- */
+
+.login-root-container {
+    font-family: 'Inter', sans-serif;
+}
+
+.login-page-wrapper {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1rem; /* p-4 */
+    position: relative;
+    background-color: var(--color-background-light);
+    transition: background-color 0.3s;
+}
+.dark-mode .login-page-wrapper {
+    background-color: var(--color-background-dark);
+}
+
+.icon-lg { width: 1.5rem; height: 1.5rem; } /* w-6 h-6 */
+
+/* --- Dark Mode Toggle --- */
+
+.dark-mode-toggle {
+    position: absolute;
+    top: 1.5rem; /* top-6 */
+    right: 1.5rem; /* right-6 */
+    padding: 0.5rem; /* p-2 */
+    border-radius: 9999px; /* rounded-full */
+    transition: background-color 0.3s, color 0.3s;
+    border: none;
+    background: none;
+    z-index: 10;
+    cursor: pointer;
+    color: var(--color-text-light);
+}
+.dark-mode .dark-mode-toggle {
+    color: var(--color-text-dark);
+}
+.dark-mode-toggle:hover {
+    background-color: #F3F4F6; /* hover:bg-gray-100 */
+}
+.dark-mode .dark-mode-toggle:hover {
+    background-color: #374151; /* dark:hover:bg-gray-700 */
+}
+
+/* --- Content Grid Layout --- */
+
+.login-content-container {
+    width: 100%;
+    max-width: 72rem; /* max-w-6xl */
+    margin: 0 auto;
+}
+
+.login-grid-layout {
+    display: grid;
+    grid-template-columns: 1fr; /* Default single column */
+    gap: 3rem; /* gap-12 */
+    align-items: center;
+}
+@media (min-width: 1024px) {
+    .login-grid-layout {
+        grid-template-columns: repeat(2, minmax(0, 1fr)); /* lg:grid-cols-2 */
+        gap: 4rem; /* lg:gap-16 */
+    }
+}
+
+/* --- Marketing Panel (Left) --- */
+
+.marketing-panel {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+}
+@media (min-width: 1024px) {
+    .marketing-panel {
+        align-items: flex-start; /* lg:items-start */
+        text-align: left; /* lg:text-left */
+    }
+}
+
+.marketing-header {
+    margin-bottom: 2rem; /* mb-8 */
+}
+
+.logo-group {
+    display: inline-flex;
+    align-items: center;
+    font-size: 1.5rem; /* text-2xl */
+    font-weight: 700;
+    font-family: 'DM Serif Display', serif;
+    text-decoration: none;
+}
+.logo-part-blue {
+    color: var(--color-blue-600);
+}
+
+.marketing-main {
+    /* Contains title and subtitle */
+}
+
+.marketing-title {
+    font-family: 'DM Serif Display', serif;
+    font-size: 2.25rem; /* 5xl */
+    font-weight: 700;
+    line-height: 1.25; /* leading-tight */
+    color: #111827; /* Default light mode color, overridden in JSX for robustness */
+}
+@media (min-width: 768px) {
+    .marketing-title {
+        font-size: 4.5rem; /* md:text-7xl */
+    }
+}
+
+.marketing-subtitle {
+    margin-top: 1.5rem; /* mt-6 */
+    font-size: 1.25rem; /* xl */
+    font-weight: 600;
+    /* Color set inline for flexibility */
+}
+
+/* --- Login Form Card (Right) --- */
+
+.login-form-card {
+    padding: 2rem; /* p-8 */
+    border-radius: 1rem; /* rounded-2xl */
+    box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1); /* shadow-lg */
+    border: 1px solid var(--color-card-border-light);
+    transition: background-color 0.3s, border-color 0.3s;
+    /* Background color set inline for robustness */
+}
+@media (min-width: 768px) {
+    .login-form-card {
+        padding: 3rem; /* md:p-12 */
+    }
+}
+
+.dark-mode .login-form-card {
+    border-color: var(--color-card-border-dark);
+}
+
+.form-title {
+    font-family: 'DM Serif Display', serif;
+    font-size: 1.875rem; /* 3xl */
+    font-weight: 700;
+    margin-bottom: 2rem; /* mb-8 */
+    text-align: center;
+    /* Color set inline for robustness */
+}
+
+.form-fields-group {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem; /* space-y-6 */
+}
+
+.form-field {
+    /* Container for label and input */
+}
+
+.form-label {
+    display: block;
+    font-size: 0.875rem; /* text-sm */
+    font-weight: 500;
+    margin-bottom: 0.5rem; /* mb-2 */
+    color: #4B5563; /* gray-700 */
+}
+.dark-mode .form-label {
+    color: #D1D5DB; /* gray-300 */
+}
+
+.form-input {
+    display: block;
+    width: 100%;
+    padding: 0.625rem 0.75rem; /* Padding adjustment for height */
+    border-radius: 0.5rem; /* rounded-lg */
+    border: 1px solid var(--color-input-border-light);
+    background-color: var(--color-input-bg-light);
+    color: #111827; /* gray-900 */
+    box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05); /* shadow-sm */
+    transition: background-color 0.3s, border-color 0.3s, box-shadow 0.3s;
+
+    /* Custom properties for focus ring and border color set inline for robustness */
+}
+.dark-mode .form-input {
+    border-color: var(--color-input-border-dark);
+    background-color: var(--color-input-bg-dark);
+    color: #F3F4F6; /* gray-100 */
+}
+
+/* Focus styles */
+.form-input:focus {
+    outline: none;
+    border-color: var(--focus-ring-color); /* Overridden by inline style */
+    box-shadow: 0 0 0 3px rgb(var(--focus-ring-color) / 0.5);
+    /* Note: Actual Tailwind focus ring logic is complex; this is a simplified custom property approach */
+}
+
+/* --- Submit Button --- */
+
+.submit-button-wrapper {
+    margin-top: 2rem; /* mt-8 */
+}
+
+.submit-button {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    padding: 0.75rem 1rem; /* py-3 px-4 */
+    border: 1px solid transparent;
+    border-radius: 0.5rem; /* rounded-lg */
+    box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05); /* shadow-sm */
+    font-size: 1.125rem; /* text-lg */
+    font-weight: 700;
+    color: #111827; /* text-gray-900 */
+    transition: background-color 0.15s, transform 0.15s;
+    cursor: pointer;
+    /* Background color set inline for robustness */
+}
+.submit-button:hover {
+    transform: scale(1.01);
+    opacity: 0.95;
+}
+
+/* --- Signup Link --- */
+
+.signup-link-text {
+    margin-top: 2rem; /* mt-8 */
+    text-align: center;
+    font-size: 0.875rem; /* text-sm */
+    color: var(--color-text-muted-light);
+}
+.dark-mode .signup-link-text {
+    color: var(--color-text-muted-dark);
+}
+
+.signup-link {
+    font-weight: 700;
+    margin-left: 0.25rem; /* ml-1 */
+    text-decoration: underline;
+    transition: color 0.15s;
+    /* Color set inline for robustness */
+}

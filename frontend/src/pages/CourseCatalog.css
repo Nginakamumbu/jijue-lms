@@ -1,0 +1,441 @@
+/* --- CSS Variables for Theming --- */
+:root {
+  /* Primary Colors */
+  --color-primary: #f59e0b; /* Tailwind amber-500/primary */
+  --color-primary-hover: #d97706; /* Tailwind amber-600 */
+  --color-secondary-blue: #2563eb; /* Tailwind blue-600 */
+  --color-secondary-blue-hover: #1d4ed8; /* Tailwind blue-700 */
+  --color-completed: #10b981; /* Tailwind green-500 */
+
+  /* Light Theme */
+  --bg-main: #f9fafb; /* Gray-50 (used for the body/wrapper if needed) */
+  --bg-card: #ffffff; /* White (for header and cards) */
+  --text-primary: #1f2937; /* Gray-900 */
+  --text-secondary: #6b7280; /* Gray-500 */
+  --border-color: #e5e7eb; /* Gray-200 */
+  --progress-track: #e5e7eb; /* Gray-200 */
+  --button-text-primary: #1f2937; /* Gray-900 */
+}
+
+/* Dark Theme */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg-main: #111827; /* Gray-900 */
+    --bg-card: #1f2937; /* Gray-800 */
+    --text-primary: #f3f4f6; /* Gray-100 */
+    --text-secondary: #9ca3af; /* Gray-400 */
+    --border-color: #374151; /* Gray-700 */
+    --progress-track: #374151; /* Gray-700 */
+    --button-text-primary: #1f2937; /* Gray-900 */
+  }
+}
+
+/* --- Base Wrapper --- */
+.course-catalog-wrapper {
+  min-height: 100vh;
+  background-color: var(--bg-main);
+  font-family: sans-serif;
+  color: var(--text-primary);
+  transition: background-color 0.15s ease-in-out;
+}
+
+/* Container for Centering */
+.catalog-container {
+  max-width: 1280px; /* mx-auto, w-full */
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: 1rem; /* px-4 */
+  padding-right: 1rem; /* px-4 */
+}
+
+@media (min-width: 1024px) {
+  .catalog-container {
+    padding-left: 1.5rem; /* lg:px-6 */
+    padding-right: 1.5rem; /* lg:px-6 */
+  }
+}
+
+/* --- Header --- */
+.catalog-header {
+  background-color: var(--bg-card);
+  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  position: sticky;
+  top: 0;
+  z-index: 50;
+}
+
+.header-nav-content {
+  padding-top: 1rem;
+  padding-bottom: 1rem;
+  display: flex;
+  align-items: center;
+}
+
+.catalog-logo {
+  display: inline-flex;
+  align-items: center;
+  font-size: 1.5rem; /* text-2xl */
+  font-weight: 700; /* font-bold */
+  color: var(--text-primary);
+}
+
+.catalog-logo .logo-part-1 {
+  color: var(--color-secondary-blue);
+}
+
+.catalog-logo .logo-part-2 {
+  color: var(--color-primary);
+}
+
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 1rem; /* space-x-4 */
+}
+
+.notification-button {
+  padding: 0.5rem;
+  border-radius: 9999px;
+  transition: background-color 0.15s;
+}
+
+.notification-button:hover {
+  background-color: rgba(229, 231, 235, 0.5); /* gray-100 equivalent */
+}
+@media (prefers-color-scheme: dark) {
+  .notification-button:hover {
+    background-color: rgba(55, 65, 81, 0.5); /* gray-700 equivalent */
+  }
+}
+
+.notification-icon {
+  color: var(--text-secondary);
+  font-size: 1.5rem;
+}
+
+.user-profile {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem; /* space-x-3 */
+}
+
+.user-avatar-placeholder {
+  width: 2.5rem; /* w-10 */
+  height: 2.5rem; /* h-10 */
+  background-color: var(--color-primary);
+  border-radius: 9999px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  color: white;
+}
+
+.user-info-text {
+  display: none; /* hidden */
+}
+@media (min-width: 768px) {
+  .user-info-text {
+    display: block; /* md:block */
+  }
+}
+
+.user-name {
+  font-weight: 600;
+  font-size: 0.875rem; /* text-sm */
+  color: var(--text-primary);
+}
+
+.user-profile-link {
+  font-size: 0.75rem; /* text-xs */
+  color: var(--text-secondary);
+}
+
+/* --- Main Content --- */
+.catalog-main-content {
+  max-width: 1280px; /* mx-auto */
+  margin-left: auto;
+  margin-right: auto;
+  padding: 1rem; /* p-4 */
+}
+
+@media (min-width: 1024px) {
+  .catalog-main-content {
+    padding: 2rem; /* lg:p-8 */
+  }
+}
+
+.catalog-heading-section {
+  margin-bottom: 2.5rem; /* mb-10 */
+}
+
+.catalog-title {
+  font-size: 2.25rem; /* text-4xl */
+  font-weight: 700; /* font-bold */
+  line-height: 1.25; /* leading-tight */
+  color: var(--text-primary);
+}
+
+@media (min-width: 768px) {
+  .catalog-title {
+    font-size: 3rem; /* md:text-5xl */
+  }
+}
+
+.catalog-subtitle {
+  margin-top: 0.5rem; /* mt-2 */
+  font-size: 1.125rem; /* text-lg */
+  color: var(--text-secondary);
+}
+
+/* --- Search & Filter --- */
+.catalog-search-filter {
+  margin-bottom: 2rem; /* mb-8 */
+}
+
+.search-filter-group {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem; /* gap-4 */
+}
+
+@media (min-width: 768px) {
+  .search-filter-group {
+    flex-direction: row; /* md:flex-row */
+  }
+}
+
+.search-input-container {
+  position: relative;
+  flex-grow: 1; /* flex-grow */
+}
+
+.search-icon {
+  position: absolute;
+  left: 0.75rem; /* left-3 */
+  top: 50%;
+  transform: translateY(-50%); /* -translate-y-1/2 */
+  color: var(--text-secondary); /* gray-400 */
+  font-size: 1.5rem;
+}
+
+.search-input {
+  width: 100%;
+  padding: 0.75rem 1rem 0.75rem 2.5rem; /* pl-10 pr-4 py-3 */
+  border-radius: 0.5rem; /* rounded-lg */
+  border: 1px solid var(--border-color);
+  background-color: var(--bg-card);
+  color: var(--text-primary);
+  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+
+.search-input:focus {
+  outline: none;
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.5); /* focus:ring-primary focus:ring-opacity-50 */
+}
+
+.filter-select-container {
+  position: relative;
+}
+
+.filter-select {
+  width: 100%;
+  padding: 0.75rem 2.5rem 0.75rem 1rem; /* pl-4 pr-10 py-3 */
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  border-radius: 0.5rem;
+  border: 1px solid var(--border-color);
+  background-color: var(--bg-card);
+  color: var(--text-primary);
+  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+
+@media (min-width: 768px) {
+  .filter-select {
+    width: auto; /* md:w-auto */
+  }
+}
+
+.filter-select:focus {
+  outline: none;
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.5);
+}
+
+.filter-arrow {
+  position: absolute;
+  right: 0.75rem; /* right-3 */
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--text-secondary); /* gray-400 */
+  pointer-events: none;
+  font-size: 1.5rem;
+}
+
+.filter-button {
+  width: 100%; /* w-full */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 0.5rem; /* gap-2 */
+  padding: 0.75rem 1.5rem; /* py-3 px-6 */
+  border: 1px solid transparent;
+  border-radius: 0.5rem;
+  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  font-size: 1.125rem; /* text-lg */
+  font-weight: 700;
+  color: var(--button-text-primary);
+  background-color: var(--color-primary);
+  transition: opacity 0.15s, background-color 0.15s;
+}
+
+.filter-button:hover {
+  opacity: 0.9;
+}
+
+.filter-button:focus {
+  outline: none;
+  box-shadow: 0 0 0 2px var(--bg-main), 0 0 0 4px var(--color-primary);
+}
+
+@media (min-width: 768px) {
+  .filter-button {
+    width: auto; /* md:w-auto */
+  }
+}
+
+/* --- Courses Grid --- */
+.course-grid {
+  display: grid;
+  grid-template-columns: repeat(1, minmax(0, 1fr)); /* grid-cols-1 */
+  gap: 2rem; /* gap-8 */
+}
+
+@media (min-width: 768px) {
+  .course-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr)); /* md:grid-cols-2 */
+  }
+}
+
+@media (min-width: 1280px) {
+  .course-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr)); /* xl:grid-cols-3 */
+  }
+}
+
+.course-card {
+  background-color: var(--bg-card);
+  border-radius: 0.75rem; /* rounded-xl */
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  border: 1px solid var(--border-color);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  transition: transform 0.3s ease-in-out;
+}
+
+.course-card:hover {
+  transform: scale(1.03); /* hover:scale-105 */
+}
+
+.course-card-content {
+  padding: 1.5rem; /* p-6 */
+  flex-grow: 1;
+}
+
+.course-title {
+  font-size: 1.5rem; /* text-2xl */
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: 0.5rem; /* mb-2 */
+}
+
+.course-description {
+  color: var(--text-secondary);
+  margin-bottom: 1rem; /* mb-4 */
+  font-size: 0.875rem; /* text-sm */
+  line-height: 1.6; /* leading-relaxed */
+}
+
+.course-card-footer {
+  padding: 0 1.5rem 1.5rem 1.5rem; /* px-6 pb-6 */
+}
+
+/* --- Progress Bar --- */
+.progress-bar-container {
+  margin-bottom: 0.5rem; /* mb-2 */
+}
+
+.progress-labels {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.875rem; /* text-sm */
+  font-weight: 500;
+  color: var(--text-secondary);
+  margin-bottom: 0.25rem; /* mb-1 */
+}
+
+.progress-track {
+  width: 100%;
+  background-color: var(--progress-track);
+  border-radius: 9999px;
+  height: 0.625rem; /* h-2.5 */
+}
+
+.progress-bar {
+  height: 0.625rem; /* h-2.5 */
+  border-radius: 9999px;
+  background-color: var(--color-primary); /* Default progress color */
+  transition: width 0.3s ease-in-out;
+}
+
+.progress-bar.progress-completed {
+    background-color: var(--color-completed); /* Custom color for 100% */
+}
+
+/* --- Action Buttons --- */
+.course-action-button {
+  margin-top: 1rem; /* mt-4 */
+  width: 100%;
+  display: inline-block;
+  text-align: center;
+  padding: 0.5rem 1rem; /* py-2 px-4 */
+  border-radius: 0.5rem;
+  font-weight: 600;
+  transition: background-color 0.15s, opacity 0.15s, color 0.15s;
+}
+
+/* Primary Button (Continue Learning) */
+.button-type-primary {
+  color: var(--button-text-primary);
+  background-color: var(--color-primary);
+}
+
+.button-type-primary:hover {
+  opacity: 0.9;
+}
+
+/* Secondary Button (Start Course) */
+.button-type-secondary {
+  color: white;
+  background-color: var(--color-secondary-blue);
+}
+
+.button-type-secondary:hover {
+  background-color: var(--color-secondary-blue-hover);
+}
+
+/* Completed Button (Course Completed) */
+.button-type-completed {
+  color: var(--text-secondary);
+  background-color: var(--progress-track); /* Use track color for subtle look */
+  cursor: default;
+}
+
+.button-type-completed:hover {
+  background-color: var(--border-color);
+}
