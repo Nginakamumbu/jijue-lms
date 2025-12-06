@@ -1,15 +1,43 @@
 import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom'; // 👈 IMPORTED LINK for navigation
-import { Sun, Moon } from 'lucide-react';
+import { Link, useNavigate } from 'react-router-dom'; // 👈 ADDED useNavigate
+import { Sun, Moon, Loader } from 'lucide-react'; // 👈 ADDED Loader
 import './LoginPage.css'; // Import the dedicated CSS file
+const API_BASE_URL = 'http://127.0.0.1:8000';
+// NOTE: Login endpoint in main.py is /api/v1/auth/login.
+// We must ensure the constant reflects the correct path if it differs from /auth/login
+const LOGIN_ENDPOINT = `${API_BASE_URL}/api/v1/auth/login`; 
+
 
 // --- Internal Constants for Styling (Passed to CSS via variables) ---
 const PRIMARY_COLOR = "#C8A2C8"; // Your defined primary color
 const LIGHT_TITLE_COLOR = "#111827"; 
 
+// --- Status Box Component (Replaces alert()) ---
+const StatusBox = ({ message, type }) => {
+    if (!message) return null;
+
+    const baseStyle = {
+        padding: '12px',
+        borderRadius: '8px',
+        marginBottom: '20px',
+        textAlign: 'center',
+        fontWeight: '600'
+    };
+
+    const styles = type === 'success'
+        ? { ...baseStyle, backgroundColor: '#d4edda', color: '#155724', border: '1px solid #c3e6cb' }
+        : { ...baseStyle, backgroundColor: '#f8d7da', color: '#721c24', border: '1px solid #f5c6cb' };
+
+    return <div style={styles}>{message}</div>;
+};
+
 // --- App Component ---
 export default function LoginPage() {
+    const navigate = useNavigate(); // Initialize useNavigate
     const [isDarkMode, setIsDarkMode] = useState(false);
+    const [isLoading, setIsLoading] = useState(false); // ADDED: Loading state
+    const [status, setStatus] = useState({ message: '', type: '' }); // ADDED: Status message state
+
     const [formData, setFormData] = useState({
         username: '',
         password: ''
@@ -50,15 +78,57 @@ export default function LoginPage() {
             ...prev,
             [name]: value
         }));
+        setStatus({ message: '', type: '' }); // Clear status on input change
     };
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => { // CHANGED to async
         e.preventDefault();
-        console.log("Login Attempted with Data:", formData);
-        // Add actual login logic here (e.g., API call)
+        setStatus({ message: '', type: '' });
+        setIsLoading(true);
 
-        // Use a custom message box instead of alert()
-        alert("Login Attempted (Simulated). Check console for data.");
+        try {
+            // CRITICAL FIX: Encode data for application/x-www-form-urlencoded
+            const params = new URLSearchParams({
+                username: formData.username,
+                password: formData.password,
+            }).toString();
+
+            const response = await fetch(LOGIN_ENDPOINT, {
+                method: 'POST',
+                headers: {
+                    // CRITICAL: Must be form-urlencoded for FastAPI OAuth2PasswordRequestForm
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: params // Send the URL encoded string
+            });
+
+            if (response.ok) {
+                const result = await response.json(); 
+                
+                // Store the access token for future API calls
+                localStorage.setItem('accessToken', result.access_token);
+                
+                setStatus({ message: "Login successful! Redirecting...", type: 'success' });
+                
+                // Redirect to the dashboard/home page after a short delay
+                setTimeout(() => navigate('/dashboard'), 1500); 
+
+            } else {
+                const errorData = await response.json();
+                const errorMessage = errorData.detail || "Invalid username or password.";
+                
+                setStatus({ message: `Login failed: ${errorMessage}`, type: 'error' });
+            }
+        } catch (error) {
+            // Handle network errors (e.g., backend is down, CORS issue)
+            setStatus({ 
+                message: "Network Error: Could not connect to the backend API. Please ensure the server is running and CORS is configured.", 
+                type: 'error' 
+            });
+            console.error('Network Error during login:', error);
+        } finally {
+            setIsLoading(false);
+        }
     };
 
     return (
@@ -93,10 +163,10 @@ export default function LoginPage() {
                                     style={{ color: isDarkMode ? 'var(--color-text-dark)' : LIGHT_TITLE_COLOR }}
                                 >
                                     Jijue: Know Better. Live Freely.
-                                </h1> {/* 👈 ERROR FIXED: Added closing </h1> tag */}
+                                </h1> 
                                 <p className="marketing-subtitle" style={{ color: PRIMARY_COLOR }}>
                                     Accurate, stigma-free HIV awareness for every Kenyan. Privacy guaranteed.
-                                </p> {/* 👈 ERROR FIXED: Now properly closed <p> tag */}
+                                </p> 
                             </main>
                         </div>
                         
@@ -113,6 +183,11 @@ export default function LoginPage() {
                             >
                                 Login To Your Account
                             </h2>
+                            
+                            {/* Status Message Box */}
+                            <StatusBox message={status.message} type={status.type} />
+
+
                             <form onSubmit={handleSubmit}>
                                 <div className="form-fields-group">
                                     
@@ -133,6 +208,7 @@ export default function LoginPage() {
                                                 '--focus-ring-color': PRIMARY_COLOR,
                                                 borderColor: PRIMARY_COLOR, 
                                             }}
+                                            disabled={isLoading}
                                         />
                                     </div>
                                     
@@ -153,6 +229,7 @@ export default function LoginPage() {
                                                 '--focus-ring-color': PRIMARY_COLOR,
                                                 borderColor: PRIMARY_COLOR,
                                             }}
+                                            disabled={isLoading}
                                         />
                                     </div>
                                 </div>
@@ -163,8 +240,13 @@ export default function LoginPage() {
                                         className="submit-button" 
                                         type="submit"
                                         style={{ backgroundColor: PRIMARY_COLOR }}
+                                        disabled={isLoading}
                                     >
-                                        LOGIN
+                                        {isLoading ? (
+                                            <Loader size={20} className="animate-spin mr-2" />
+                                        ) : (
+                                            'LOGIN'
+                                        )}
                                     </button>
                                 </div>
                                 

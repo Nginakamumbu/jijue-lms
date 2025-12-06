@@ -1,17 +1,17 @@
-# backend/main.py
-
 from fastapi import FastAPI, Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 from fastapi.middleware.cors import CORSMiddleware
 from datetime import timedelta, datetime, timezone
-from typing import Annotated
+from typing import Annotated, List 
 
 from bcrypt import hashpw, gensalt, checkpw
 from jose import JWTError, jwt
-from pydantic import ValidationError
+from pydantic import ValidationError, BaseModel 
 
 # Corrected absolute import for models
 from models import UserRegistration, UserResponse, Token, TokenData
+from database import SessionLocal, get_db
+from db_models import Course
 
 # --- Configuration ---
 # In a real app, these would come from environment variables (.env file)
@@ -29,7 +29,16 @@ app = FastAPI(title="Jijue LMS API")
 # Setup CORS (Cross-Origin Resource Sharing)
 # Allows your React frontend (running on a different port) to talk to this API
 origins = [
-    "http://localhost:5173",  # Default React development port
+    "http://localhost:5177",  # other frontend ports (if used)
+    "http://localhost:5176",
+    "http://localhost:5175",
+    "http://localhost:5174",
+    "http://localhost:5173",
+    "http://127.0.0.1:5173",
+    "http://127.0.0.1:5174",
+    "http://127.0.0.1:5175",
+    "http://127.0.0.1:5176",
+    "http://127.0.0.1:5177",
     # Add your production frontend URL here when deployed
 ]
 
@@ -39,6 +48,106 @@ app.add_middleware(
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
+)
+
+# ----------------------------------------------------
+# DASHBOARD DATA MODELS (Pydantic) - NEW ADDITION
+# ----------------------------------------------------
+
+# Defining models here since they were not included in the 'from models import' list
+class NavItem(BaseModel):
+    name: str
+    icon: str
+    current: bool
+    link: str
+
+class CourseItem(BaseModel):
+    title: str
+    description: str
+    icon: str
+    color: str
+    link: str
+
+class ContinueLearning(BaseModel):
+    moduleTitle: str
+    description: str
+    link: str
+
+class DashboardData(BaseModel):
+    userName: str
+    progress: int
+    modulesCompleted: int
+    totalModules: int
+    continueLearning: ContinueLearning
+    featuredCourses: List[CourseItem]
+    quickLinks: List[CourseItem]
+    navigation: List[NavItem]
+
+class CourseResponse(BaseModel):
+    id: int
+    title: str
+    description: str
+    category: str
+    icon: str
+    color: str
+
+    class Config:
+        from_attributes = True
+
+# ----------------------------------------------------
+# DASHBOARD STATIC DATA SOURCE - NEW ADDITION
+# ----------------------------------------------------
+
+DASHBOARD_DATA_SOURCE = DashboardData(
+    userName="Alex",
+    progress=75,
+    modulesCompleted=3,
+    totalModules=4,
+    continueLearning=ContinueLearning(
+        moduleTitle="Module 2: Understanding Transmission",
+        description="Learn about the ways HIV is transmitted and how it is not. Debunk common myths.",
+        link="#",
+    ),
+    featuredCourses=[
+        CourseItem(
+            title="Living Well with HIV",
+            description="Nutrition, mental health, and treatment adherence.",
+            icon="HeartPulse",
+            color='secondary',
+            link="#",
+        ),
+        CourseItem(
+            title="Prevention & PrEP",
+            description="Understand the tools available for prevention.",
+            icon="Shield",
+            color='primary',
+            link="#",
+        )
+    ],
+    quickLinks=[
+        CourseItem(
+            title="Community Forum",
+            description="Ask questions and share experiences.",
+            icon="MessageSquare",
+            color='primary',
+            link="#",
+        ),
+        CourseItem(
+            title="Find a Clinic",
+            description="Locate testing and support centers.",
+            icon="MapPin",
+            color='secondary',
+            link="#",
+        ),
+    ],
+    navigation=[
+        NavItem(name="Dashboard", icon="LayoutDashboard", current=True, link="/dashboard"),
+        NavItem(name="Course Catalog", icon="School", current=False, link="/courses"),
+        NavItem(name="My Courses", icon="PlayCircle", current=False, link="/my-courses"),
+        NavItem(name="Community", icon="Users", current=False, link="/forum"),
+        NavItem(name="Resources", icon="Zap", current=False, link="/resources"),
+        NavItem(name="Settings", icon="Settings", current=False, link="/settings"),
+    ]
 )
 
 # --- Authentication Utilities ---
@@ -156,3 +265,73 @@ async def get_current_user(token: Annotated[str, Depends(oauth2_scheme)]):
 async def read_users_me(current_user: Annotated[UserResponse, Depends(get_current_user)]):
     """Example route to demonstrate JWT protection (returns the logged-in user's data)."""
     return current_user
+    
+# ----------------------------------------------------
+# DASHBOARD API ENDPOINT - NEW ADDITION
+# ----------------------------------------------------
+
+@app.get("/api/dashboard", response_model=DashboardData)
+def get_dashboard_data():
+    """
+    Returns all data required to render the user dashboard.
+    This is the endpoint your React component will call.
+    """
+    return DASHBOARD_DATA_SOURCE
+
+# ----------------------------------------------------
+# COURSES API ENDPOINT - NEW ADDITION
+# ----------------------------------------------------
+
+@app.get("/api/courses", response_model=List[CourseResponse])
+def get_courses(db = Depends(get_db)):
+    """
+    Returns all available courses from the database.
+    """
+    courses = db.query(Course).all()
+    return courses
+
+@app.get("/api/courses/{course_id}")
+def get_course_with_modules(course_id: int, db = Depends(get_db)):
+    """
+    Returns a specific course with its modules and lessons.
+    """
+    from db_models import Module, Lesson
+    
+    course = db.query(Course).filter(Course.id == course_id).first()
+    if not course:
+        raise HTTPException(status_code=404, detail="Course not found")
+    
+    modules = db.query(Module).filter(Module.course_id == course_id).all()
+    
+    course_data = {
+        "id": course.id,
+        "title": course.title,
+        "description": course.description,
+        "category": course.category,
+        "icon": course.icon,
+        "color": course.color,
+        "modules": []
+    }
+    
+    for module in modules:
+        lessons = db.query(Lesson).filter(Lesson.module_id == module.id).all()
+        module_data = {
+            "id": module.id,
+            "title": module.title,
+            "description": module.description,
+            "order": module.order,
+            "lessons": [
+                {
+                    "id": lesson.id,
+                    "title": lesson.title,
+                    "description": lesson.description,
+                    "content": lesson.content,
+                    "duration_minutes": lesson.duration_minutes,
+                    "order": lesson.order
+                }
+                for lesson in lessons
+            ]
+        }
+        course_data["modules"].append(module_data)
+    
+    return course_data

@@ -422,13 +422,13 @@ body {
 .continue-card {
     background-color: var(--color-primary-dark);
     color: #FFFFFF;
-    padding: 1.5rem;
-    border-radius: 1rem; /* 2xl */
-    box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1); /* shadow-xl */
+    padding: 0.75rem;
+    border-radius: 0.5rem;
+    box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
 }
 @media (min-width: 640px) {
     .continue-card {
-        padding: 2rem;
+        padding: 1rem;
     }
 }
 
@@ -472,6 +472,11 @@ body {
 
 .continue-card-text {
     flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
 }
 
 .continue-card-tag {
@@ -506,19 +511,25 @@ body {
 }
 
 .continue-button {
-    margin-top: 1rem; /* mt-4 */
+    margin-top: 0.5rem;
+    width: fit-content;
     flex-shrink: 0;
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    padding: 0.75rem 1.5rem; /* px-6 py-3 */
+    padding: 0.0125rem 0.025rem;
     background-color: #FFFFFF;
     color: var(--color-primary-dark);
-    font-weight: 700;
-    border-radius: 0.5rem; /* rounded-lg */
-    box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1); /* shadow-lg */
+    font-weight: 600;
+    font-size: 0.125rem;
+    border-radius: 0.0125rem;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
     transition: background-color 0.15s, transform 0.15s;
     text-decoration: none;
+    line-height: 1;
+    user-select: none;
+    -webkit-user-drag: none;
+    cursor: pointer;
 }
 @media (min-width: 768px) {
     .continue-button {
@@ -530,11 +541,6 @@ body {
     transform: scale(1.02);
 }
 
-/* --- Featured Courses Section --- */
-
-.featured-courses-section {
-    /* Styles for the container div */
-}
 
 .section-title {
     font-size: 1.5rem; /* 2xl */

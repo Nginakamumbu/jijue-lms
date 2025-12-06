@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Poppins:wght@400;500;600;700&display=swap');
+
 /* --- Global Reset for Full Screen Coverage --- */
 /* Ensure the html, body, and the main React root element take up 
    the full viewport and prevent accidental horizontal scrolling. */
@@ -10,7 +12,6 @@ html, body, #root {
 }
 
 /* --- Font Imports --- */
-@import url('https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Poppins:wght@400;500;600;700&display=swap');
 
 /* --- Color Variables & Fonts --- */
 :root {

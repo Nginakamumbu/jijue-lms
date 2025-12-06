@@ -10,6 +10,7 @@ import LoginPage from "./pages/LoginPage.jsx";
 import RegisterPage from "./pages/RegisterPage.jsx";
 import Dashboard from "./pages/Dashboard.jsx";
 import CourseCatalog from "./pages/CourseCatalog.jsx";
+import MyCoursesPage from "./pages/MyCoursesPage.jsx";
 import CourseDetails from "./pages/CourseDetails.jsx";
 import CoursePage from "./pages/CoursePage.jsx";
 import LessonPlayer from "./pages/LessonPlayer.jsx";
@@ -27,6 +28,7 @@ export default function App() {
         <Route path="/register" element={<RegisterPage />} /> {/* Correctly routes to Signup */}
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/courses" element={<CourseCatalog />} />
+        <Route path="/my-courses" element={<MyCoursesPage />} />
 
         <Route path="/course/:courseId" element={<CoursePage />} />
         <Route path="/course/:courseId/details" element={<CourseDetails />} />
@@ -36,6 +38,10 @@ export default function App() {
         <Route path="/media" element={<MediaLibrary />} />
         <Route path="/resources" element={<ResourcesDirectory />} />
         <Route path="/stats" element={<Statistics />} />
+
+          {/* User/Dashboard Routes */}
+        <Route path="/help" element={<CommunityForum />} />
+        <Route path="/logout" element={<LandingPage />} />
       </Routes>
     </BrowserRouter>
   );

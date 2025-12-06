@@ -1,5 +1,6 @@
-/* --- Font Imports --- */
 @import url('https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Inter:wght@400;500;600;700&display=swap');
+
+/* --- Font Imports --- */
 
 /* --- Color Variables & Fonts --- */
 :root {
@@ -127,10 +128,6 @@
     color: var(--color-blue-600);
 }
 
-.marketing-main {
-    /* Contains title and subtitle */
-}
-
 .marketing-title {
     font-family: 'DM Serif Display', serif;
     font-size: 2.25rem; /* 5xl */
@@ -184,10 +181,6 @@
     display: flex;
     flex-direction: column;
     gap: 1.5rem; /* space-y-6 */
-}
-
-.form-field {
-    /* Container for label and input */
 }
 
 .form-label {

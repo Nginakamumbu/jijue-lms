@@ -3,6 +3,9 @@ import { Link, useNavigate } from 'react-router-dom';
 import { Globe, Sun, Moon, Quote } from 'lucide-react'; // Changed Info to Quote icon
 import './RegisterPage.css'; 
 
+const API_BASE_URL = 'http://127.0.0.1:8000'; 
+const REGISTER_ENDPOINT = `${API_BASE_URL}/api/v1/auth/register`;
+
 // --- Internal Constants for Styling ---
 const PRIMARY_COLOR = "#C8A2C8";
 
@@ -31,6 +34,8 @@ export default function RegisterPage() {
         email: '',
         password: ''
     });
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState(null);
 
     // Dark Mode, CSS Variable Setup, and Fact Rotation Effect
     useEffect(() => {
@@ -66,11 +71,46 @@ export default function RegisterPage() {
         }));
     };
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
-        console.log("Registration Attempted with Data:", formData);
-        alert("Account Registered successfully! Redirecting to login.");
-        navigate('/login');
+        setError(null);
+        setLoading(true);
+
+        // Map form data fields to the backend's expected UserRegistration model (full_name, email, password)
+        const userData = {
+            full_name: formData.name, // Mapping 'name' from form to 'full_name' for API
+            email: formData.email,
+            password: formData.password,
+            // 'username' is ignored as it's not in the UserRegistration model
+        };
+        
+        try {
+            const response = await fetch(REGISTER_ENDPOINT, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(userData),
+            });
+
+            if (!response.ok) {
+                // Read the JSON response to get the error detail from FastAPI
+                const errorData = await response.json();
+                const errorMessage = errorData.detail || 'Registration failed due to an unknown error.';
+                throw new Error(errorMessage);
+            }
+            
+            // Success
+            console.log("Registration Successful!");
+            alert("Account Registered successfully! Redirecting to login.");
+            navigate('/login');
+
+        } catch (err) {
+            console.error("Registration Error:", err.message);
+            setError(err.message); // Set error message state
+        } finally {
+            setLoading(false);
+        }
     };
 
     // --- Fact Card Component (Modified for Quotes) ---
