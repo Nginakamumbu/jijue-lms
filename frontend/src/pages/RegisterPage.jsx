@@ -3,7 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { Globe, Sun, Moon, Quote } from 'lucide-react'; // Changed Info to Quote icon
 import './RegisterPage.css'; 
 
-const API_BASE_URL = 'http://127.0.0.1:8000'; 
+const API_BASE_URL = 'http://localhost:8000'; 
 const REGISTER_ENDPOINT = `${API_BASE_URL}/api/v1/auth/register`;
 
 // --- Internal Constants for Styling ---
@@ -84,6 +84,9 @@ export default function RegisterPage() {
             // 'username' is ignored as it's not in the UserRegistration model
         };
         
+        console.log("Submitting registration with data:", userData);
+        console.log("API Endpoint:", REGISTER_ENDPOINT);
+        
         try {
             const response = await fetch(REGISTER_ENDPOINT, {
                 method: 'POST',
@@ -93,15 +96,19 @@ export default function RegisterPage() {
                 body: JSON.stringify(userData),
             });
 
+            console.log("Response status:", response.status);
+            
             if (!response.ok) {
                 // Read the JSON response to get the error detail from FastAPI
                 const errorData = await response.json();
                 const errorMessage = errorData.detail || 'Registration failed due to an unknown error.';
+                console.error("API Error Response:", errorData);
                 throw new Error(errorMessage);
             }
             
             // Success
-            console.log("Registration Successful!");
+            const successData = await response.json();
+            console.log("Registration Successful!", successData);
             alert("Account Registered successfully! Redirecting to login.");
             navigate('/login');
 
@@ -166,6 +173,18 @@ export default function RegisterPage() {
                         </div>
 
                         <form onSubmit={handleSubmit} className="input-form-group">
+                            {error && (
+                                <div className="error-message" style={{ 
+                                    backgroundColor: '#fee2e2', 
+                                    color: '#991b1b', 
+                                    padding: '0.75rem',
+                                    borderRadius: '0.375rem',
+                                    marginBottom: '1rem',
+                                    border: '1px solid #fecaca'
+                                }}>
+                                    <strong>Error:</strong> {error}
+                                </div>
+                            )}
                             {['name', 'username', 'email', 'password'].map((field) => (
                                 <div className="input-field" key={field}>
                                     <label className="input-label" htmlFor={field}>{field.charAt(0).toUpperCase() + field.slice(1)}</label>
@@ -190,8 +209,9 @@ export default function RegisterPage() {
                                     className="submit-button" 
                                     type="submit"
                                     style={{ backgroundColor: PRIMARY_COLOR }}
+                                    disabled={loading}
                                 >
-                                    SIGNUP
+                                    {loading ? 'REGISTERING...' : 'SIGNUP'}
                                 </button>
                             </div>
                         </form>

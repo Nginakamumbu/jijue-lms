@@ -1,64 +1,73 @@
 /* --- CSS Variables for Theming --- */
 :root {
-    /* Primary (Purple/Mauve) */
-    --color-primary-default: #C8A2C8;
-    --color-primary-dark: #A97FA9;
-    --color-primary-light: #E6D9E6;
+    /* Primary Colors */
+    --color-primary: #A569BD;
+    --color-primary-light: #D7BDE2;
+    --color-primary-dark: #8E44AD;
 
-    /* Secondary (Blue) */
-    --color-secondary-default: #4A90E2;
+    /* Secondary Accent Color */
+    --color-secondary: #58D68D;
 
     /* Status Colors */
-    --color-green: #10B981; /* Completed */
-    --color-red: #EF4444;   /* Error/Alert */
+    --color-green: #10B981;
+    --color-red: #EF4444;
 
-    /* Light Theme Colors */
-    --color-bg-main: #F9FAFB;
-    --color-surface: #FFFFFF;
-    --color-text: #111827;
-    --color-text-muted: #6B7280;
-    --color-border: #E5E7EB;
-    --color-hover-bg-light: #F3F4F6;
-    --color-module-header: #F9FAFB; /* Gray-50 */
-    --color-current-lesson-bg: rgba(230, 217, 230, 0.3); /* primary-light/30 */
+    /* Light Theme */
+    --bg-main: #F9F7FB;
+    --bg-card: #FFFFFF;
+    --text-primary: #111827;
+    --text-secondary: #6B7280;
+    --border-color: #E5E7EB;
+    --progress-track: #E5E7EB;
+    --hover-bg: #F3F4F6;
+    --module-header-bg: #F9FAFB;
+    --current-lesson-bg: rgba(215, 189, 226, 0.3);
 }
 
-/* --- Dark Theme Overrides (Applied when .dark class is on html) --- */
-.dark {
-    --color-bg-main: #111827;
-    --color-surface: #1F2937;
-    --color-text: #F9FAFB;
-    --color-text-muted: #9CA3AF;
-    --color-border: #374151;
-    --color-hover-bg-light: #374151;
-    --color-module-header: rgba(31, 41, 55, 0.5); /* surface-dark/50 */
-    --color-current-lesson-bg: rgba(169, 127, 169, 0.2); /* primary-dark/20 */
+/* Dark Mode */
+.dark-mode {
+    --bg-main: #1F2937;
+    --bg-card: #374151;
+    --text-primary: #F9FAFB;
+    --text-secondary: #9CA3AF;
+    --border-color: #4B5563;
+    --progress-track: #4B5563;
+    --hover-bg: #374151;
+    --module-header-bg: rgba(31, 41, 55, 0.5);
+    --current-lesson-bg: rgba(142, 68, 173, 0.2);
 }
 
 /* --- Base Styles --- */
 .course-detail-page-wrapper {
     min-height: 100vh;
-    background-color: var(--color-bg-main);
-    color: var(--color-text);
-    font-family: sans-serif;
+    background-color: var(--bg-main);
+    color: var(--text-primary);
+    font-family: 'Inter', sans-serif;
     line-height: 1.5;
-    transition: background-color 0.15s ease-in-out;
+    transition: background-color 0.3s;
 }
 
-/* Utility Classes for Text/Colors based on variables */
-.text-primary { color: var(--color-primary-default); }
+/* Align content beside the fixed sidebar on large screens */
+@media (min-width: 1024px) {
+    .course-detail-page-wrapper {
+        padding-left: 16rem;
+    }
+}
+
+/* Utility Classes */
+.text-primary-color { color: var(--color-primary); }
 .text-primary-dark { color: var(--color-primary-dark); }
-.text-secondary { color: var(--color-secondary-default); }
+.text-secondary-color { color: var(--color-secondary); }
 .text-green { color: var(--color-green); }
-.text-muted { color: var(--color-text-muted); }
-.text-text { color: var(--color-text); }
-.font-display { font-weight: 800; } /* Equivalent to font-extrabold */
+.text-muted { color: var(--text-secondary); }
+.text-main { color: var(--text-primary); }
+.font-display { font-weight: 700; font-family: 'DM Serif Display', serif; }
 
 /* --- Header & Navigation --- */
 .header-bar {
-    background-color: var(--color-surface);
-    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.06);
-    border-bottom: 1px solid var(--color-border);
+    background-color: var(--bg-card);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    border-bottom: 1px solid var(--border-color);
 }
 
 .header-bar a {
@@ -72,19 +81,19 @@
 }
 
 .nav-link-default {
-    color: var(--color-text-muted);
+    color: var(--text-secondary);
 }
 .nav-link-default:hover {
-    color: var(--color-primary-default);
-    background-color: var(--color-hover-bg-light);
+    color: var(--color-primary);
+    background-color: var(--hover-bg);
 }
 
 .nav-link-active {
-    color: var(--color-primary-default);
+    color: var(--color-primary);
     background-color: var(--color-primary-light);
 }
-.dark .nav-link-active {
-    background-color: rgba(169, 127, 169, 0.2);
+.dark-mode .nav-link-active {
+    background-color: rgba(165, 105, 189, 0.2);
 }
 
 .icon-button {
@@ -96,19 +105,32 @@
     cursor: pointer;
 }
 .icon-button:hover {
-    background-color: var(--color-hover-bg-light);
+    background-color: var(--hover-bg);
 }
 
 .mobile-menu {
     padding: 1rem;
-    background-color: var(--color-surface);
-    border-top: 1px solid var(--color-border);
+    background-color: var(--bg-card);
+    border-top: 1px solid var(--border-color);
 }
 
 /* --- Main Layout --- */
 .main-content-area {
-    padding-top: 2.5rem;
-    padding-bottom: 2.5rem;
+    max-width: 72rem;
+    margin: 0 auto;
+    padding: 2.25rem 1.25rem 2.5rem 1.25rem;
+}
+@media (min-width: 640px) {
+    .main-content-area {
+        padding-left: 1.75rem;
+        padding-right: 1.75rem;
+    }
+}
+@media (min-width: 1024px) {
+    .main-content-area {
+        padding-left: 2rem;
+        padding-right: 2rem;
+    }
 }
 
 .main-grid {
@@ -133,17 +155,21 @@
     }
 }
 
-.sidebar-column {
-    /* No change needed for 1fr */
-}
+
 
 /* --- Card Styles --- */
 .card-surface {
-    background-color: var(--color-surface);
+    background-color: var(--bg-card);
     padding: 1.5rem;
     border-radius: 0.75rem;
-    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
-    border: 1px solid var(--color-border);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    border: 1px solid var(--border-color);
+    transition: all 0.3s ease;
+}
+
+.card-surface:hover {
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+    transform: translateY(-2px);
 }
 .course-header-card {
     padding: 2rem 1.5rem;
@@ -175,7 +201,8 @@
     font-size: 2.25rem;
     font-weight: 700;
     line-height: 1.25;
-    color: var(--color-text);
+    color: var(--text-primary);
+    font-family: 'DM Serif Display', serif;
 }
 @media (min-width: 768px) {
     .course-title-main {
@@ -186,7 +213,7 @@
 .back-button {
     display: flex;
     align-items: center;
-    color: var(--color-primary-default);
+    color: var(--color-primary);
     font-weight: 600;
     transition: color 0.15s;
     background: none;
@@ -205,15 +232,22 @@
 
 /* --- Curriculum Section --- */
 .module-container {
-    border: 1px solid var(--color-border);
-    border-radius: 0.5rem;
+    border: 1px solid var(--border-color);
+    border-radius: 0.75rem;
     overflow: hidden;
+    background-color: var(--bg-card);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    transition: box-shadow 0.3s ease;
+}
+
+.module-container:hover {
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
 .module-header {
-    background-color: var(--color-module-header);
-    padding: 1rem;
-    border-bottom: 1px solid var(--color-border);
+    background-color: var(--module-header-bg);
+    padding: 1.25rem;
+    border-bottom: 1px solid var(--border-color);
 }
 
 .lesson-list {
@@ -221,26 +255,29 @@
     padding: 0;
     margin: 0;
     border-top: none;
-    background-color: var(--color-surface);
+    background-color: var(--bg-card);
 }
 
 .lesson-list .lesson-item {
-    border-bottom: 1px solid var(--color-border);
+    border-bottom: 1px solid var(--border-color);
     cursor: pointer;
+    transition: background-color 0.2s ease;
+    padding: 0.25rem 0;
 }
 .lesson-list .lesson-item:last-child {
     border-bottom: none;
 }
 
 .lesson-item:hover:not(.lesson-item-locked) {
-    background-color: var(--color-hover-bg-light);
+    background-color: var(--hover-bg);
 }
 
 .lesson-item-current {
-    background-color: var(--color-current-lesson-bg);
+    background-color: var(--current-lesson-bg);
+    border-left: 3px solid var(--color-primary);
 }
 .lesson-item-current:hover {
-    background-color: var(--color-current-lesson-bg);
+    background-color: var(--current-lesson-bg);
 }
 
 .lesson-item-locked {
@@ -251,13 +288,13 @@
 /* --- Progress Card --- */
 .progress-track {
     width: 100%;
-    background-color: var(--color-border);
+    background-color: var(--progress-track);
     border-radius: 9999px;
-    height: 0.75rem; /* h-3 */
+    height: 0.75rem;
 }
 
-.dark .progress-track {
-    background-color: var(--color-border);
+.dark-mode .progress-track {
+    background-color: var(--progress-track);
 }
 
 .progress-bar {
@@ -268,7 +305,7 @@
 }
 
 .bg-secondary {
-    background-color: var(--color-secondary-default);
+    background-color: var(--color-secondary);
 }
 
 /* --- Action Buttons --- */
@@ -289,15 +326,16 @@
 }
 
 .primary-action-button {
-    background-color: var(--color-primary-default);
+    background-color: var(--color-primary);
 }
 .primary-action-button:hover {
     background-color: var(--color-primary-dark);
-    transform: scale(1.01);
+    transform: translateY(-1px);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
 }
 .primary-action-button:focus {
     outline: none;
-    box-shadow: 0 0 0 4px rgba(200, 162, 200, 0.5); /* ring-4 ring-primary-DEFAULT/50 */
+    box-shadow: 0 0 0 4px rgba(165, 105, 189, 0.5);
 }
 
 .completed-action-button {

@@ -1,10 +1,14 @@
 import React, { useState, useEffect } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import { BookOpen, Clock, CheckCircle, CheckCircle2, PlayCircle, Lock } from 'lucide-react';
 import DashboardLayout from '../layouts/DashboardLayout';
+import ProgressRing from '../components/ProgressRing';
 import './CoursePage.css';
 
-const LessonItem = ({ lesson, status = 'not_started' }) => {
+const CURRENT_USER_ID = 2; // Alex Johnson's user ID
+const API_BASE_URL = 'http://localhost:8000';
+
+const LessonItem = ({ lesson, status = 'not_started', courseId, onClick }) => {
   let icon, classes;
 
   switch (status) {
@@ -24,7 +28,7 @@ const LessonItem = ({ lesson, status = 'not_started' }) => {
   }
 
   return (
-    <li className={`lesson-item ${classes}`}>
+    <li className={`lesson-item ${classes}`} onClick={onClick} style={{ cursor: 'pointer' }}>
       <div className="lesson-info">
         <span className="lesson-icon">{icon}</span>
         <span className="lesson-title">{lesson.title}</span>
@@ -36,128 +40,123 @@ const LessonItem = ({ lesson, status = 'not_started' }) => {
 
 const CoursePage = () => {
   const { courseId } = useParams();
+  const navigate = useNavigate();
   const [courseData, setCourseData] = useState(null);
+  const [courseProgress, setCourseProgress] = useState(null);
+  const [lessonProgressMap, setLessonProgressMap] = useState({});
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [progress, setProgress] = useState(0);
 
   useEffect(() => {
-    const fetchCourse = async () => {
+    const fetchCourseData = async () => {
       try {
-        setLoading(true);
-        const response = await fetch(`http://localhost:8000/api/courses/${courseId}`);
-        if (!response.ok) {
-          throw new Error("Failed to fetch course");
-        }
-        const data = await response.json();
+        // Fetch course with modules and lessons
+        const courseRes = await fetch(`${API_BASE_URL}/api/courses/${courseId}`);
+        if (!courseRes.ok) throw new Error('Failed to fetch course');
+        const data = await courseRes.json();
         setCourseData(data);
-        setError(null);
+
+        // Fetch course progress
+        const progressRes = await fetch(
+          `${API_BASE_URL}/api/users/${CURRENT_USER_ID}/course-progress/${courseId}`
+        );
+        if (progressRes.ok) {
+          setCourseProgress(await progressRes.json());
+        }
+
+        // Fetch lesson progress for all lessons
+        const allLessons = data.modules.flatMap(m => m.lessons || []);
+        const progressMap = {};
+        
+        for (const lesson of allLessons) {
+          const res = await fetch(
+            `${API_BASE_URL}/api/users/${CURRENT_USER_ID}/lesson-progress/${lesson.id}`
+          );
+          if (res.ok) {
+            const prog = await res.json();
+            progressMap[lesson.id] = prog.status || 'not_started';
+          }
+        }
+        setLessonProgressMap(progressMap);
       } catch (err) {
+        console.error('Error fetching course:', err);
         setError(err.message);
-        setCourseData(null);
       } finally {
         setLoading(false);
       }
     };
 
-    fetchCourse();
+    if (courseId) {
+      fetchCourseData();
+    }
   }, [courseId]);
 
-  if (loading) {
-    return (
-      <DashboardLayout>
-        <div className="course-container">
-          <p>Loading course...</p>
-        </div>
-      </DashboardLayout>
-    );
-  }
+  const handleLessonClick = (lessonId) => {
+    navigate(`/lesson/${lessonId}`, { state: { courseId } });
+  };
 
-  if (error) {
-    return (
-      <DashboardLayout>
-        <div className="course-container">
-          <p>Error: {error}</p>
-        </div>
-      </DashboardLayout>
-    );
-  }
+  if (loading) return <div className="loading-screen">Loading course...</div>;
+  if (error) return <div className="error-screen">Error: {error}</div>;
+  if (!courseData) return <div className="error-screen">Course not found</div>;
 
-  if (!courseData) {
-    return (
-      <DashboardLayout>
-        <div className="course-container">
-          <p>Course not found</p>
-        </div>
-      </DashboardLayout>
-    );
-  }
+  const modules = courseData.modules || [];
+  const totalLessons = modules.reduce((sum, m) => sum + (m.lessons?.length || 0), 0);
+  const completedLessons = Object.values(lessonProgressMap).filter(s => s === 'completed').length;
+  const progressPercentage = totalLessons > 0 ? Math.round((completedLessons / totalLessons) * 100) : 0;
 
   return (
     <DashboardLayout>
-      <div className="course-container">
-        <div className="course-layout">
-          {/* Left Column (Course Details & Curriculum) */}
-          <div className="course-main-column">
-
-            {/* Course Header */}
-            <div className="card course-header-card">
-              <span className="course-tag">{courseData.category}</span>
-              <h1 className="course-title-display">
-                {courseData.title}
-              </h1>
-              <p className="course-description">
-                {courseData.description}
-              </p>
-              <div className="course-meta">
-                <div className="meta-item">
-                  <BookOpen className="icon-sm meta-icon" />
-                  <span>{courseData.modules?.length || 0} Modules</span>
-                </div>
-                <div className="meta-item">
-                  <Clock className="icon-sm meta-icon" />
-                  <span>Approx. {(courseData.modules || []).reduce((sum, m) => sum + (m.lessons || []).reduce((ls, l) => ls + (l.duration_minutes || 0), 0), 0)} minutes</span>
-                </div>
+      <div className="course-page-wrapper">
+        {/* Course Header */}
+        <div className="course-header">
+          <div className="course-header-content">
+            <h1 className="course-title">{courseData.title}</h1>
+            <p className="course-description">{courseData.description}</p>
+            
+            <div className="course-stats">
+              <div className="stat-item">
+                <BookOpen size={20} />
+                <span>{totalLessons} Lessons</span>
+              </div>
+              <div className="stat-item">
+                <Clock size={20} />
+                <span>{modules.length} Modules</span>
               </div>
             </div>
+          </div>
 
-            {/* Course Curriculum */}
-            <div className="card curriculum-card">
-              <h2 className="card-title-display">Course Curriculum</h2>
-              <div className="curriculum-modules">
-                {courseData.modules && courseData.modules.map((module, moduleIndex) => (
-                  <div key={moduleIndex} className="module-container">
-                    <div className="module-header">
-                      <h3 className="module-title">{module.title}</h3>
-                    </div>
-                    <ul className="module-lessons">
-                      {module.lessons && module.lessons.map((lesson) => (
-                        <LessonItem key={lesson.id} lesson={lesson} status="not_started" />
-                      ))}
-                    </ul>
-                  </div>
+          {/* Progress Ring */}
+          <div className="course-progress-widget">
+            <ProgressRing percentage={progressPercentage} />
+            <p className="progress-label">{progressPercentage}% Complete</p>
+          </div>
+        </div>
+
+        {/* Modules and Lessons */}
+        <div className="modules-container">
+          {modules.map((module, idx) => (
+            <div key={module.id} className="module-card">
+              <div className="module-header">
+                <h2 className="module-title">{module.title}</h2>
+                <span className="module-number">Module {idx + 1}</span>
+              </div>
+
+              <p className="module-description">{module.description}</p>
+
+              {/* Lessons List */}
+              <ul className="lessons-list">
+                {(module.lessons || []).map((lesson) => (
+                  <LessonItem
+                    key={lesson.id}
+                    lesson={lesson}
+                    status={lessonProgressMap[lesson.id] || 'not_started'}
+                    courseId={courseId}
+                    onClick={() => handleLessonClick(lesson.id)}
+                  />
                 ))}
-              </div>
+              </ul>
             </div>
-          </div>
-
-          {/* Right Column (Sidebar) */}
-          <div className="course-sidebar">
-            {/* Course Progress Card */}
-            <div className="card progress-card">
-              <h3 className="card-title-display">Course Progress</h3>
-              <div className="progress-bar-background">
-                <div
-                  className="progress-bar-fill"
-                  style={{ width: `${progress}%` }}
-                ></div>
-              </div>
-              <p className="progress-text">{progress}% Complete</p>
-              <button className="continue-button">
-                Start Learning
-              </button>
-            </div>
-          </div>
+          ))}
         </div>
       </div>
     </DashboardLayout>

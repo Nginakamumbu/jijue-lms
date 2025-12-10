@@ -1,231 +1,165 @@
-// src/pages/ResourceDirectory.jsx
-import React from "react";
-import './ResourcesDirectory.css'; // Import the dedicated CSS file
+import React, { useState, useEffect } from "react";
+import { BookOpen, Filter, Link2, PlayCircle, FileText, ArrowUpRight, Heart, Phone, Users, MessageSquare } from "lucide-react";
+import DashboardLayout from "../layouts/DashboardLayout";
+import './ResourcesDirectory.css';
 
-// Assuming these colors based on the Tailwind classes in the original code
-const PRIMARY_COLOR = "#7C3AED"; // Purple/Primary
-const SECONDARY_COLOR = "#06B6D4"; // Cyan/Secondary
+const API_BASE_URL = 'http://localhost:8000';
 
 const ResourceDirectory = () => {
+  const [resourceCategories, setResourceCategories] = useState([]);
+  const [resources, setResources] = useState([]);
+  const [selectedCategory, setSelectedCategory] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchResourcesData = async () => {
+      try {
+        const categoriesRes = await fetch(`${API_BASE_URL}/api/resources/categories`);
+        if (categoriesRes.ok) setResourceCategories(await categoriesRes.json());
+
+        const resourcesRes = await fetch(`${API_BASE_URL}/api/resources`);
+        if (resourcesRes.ok) setResources(await resourcesRes.json());
+      } catch (error) {
+        console.error("Could not fetch resources data:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchResourcesData();
+  }, []);
+
+  const filteredResources = selectedCategory
+    ? resources.filter((r) => r.category === selectedCategory)
+    : resources;
+
+  if (isLoading) return <div className="loading-screen">Loading resources...</div>;
+
   return (
-    // Note: The 'dark' class will be managed by a parent component or manually toggled on the <html> tag
-    <div className="resource-directory-container">
-      {/* Header */}
-      <header className="header-bar">
-        <div className="header-content-wrapper">
-          <div className="header-flex-group">
-            <a className="logo-link" href="#">
-              <span className="logo-text-secondary" style={{ color: SECONDARY_COLOR }}>Tech</span>
-              <span className="logo-text-primary" style={{ color: PRIMARY_COLOR }}>Health</span>
-            </a>
-            <nav className="navigation-menu">
-              <a className="nav-link" href="#">Dashboard</a>
-              <a className="nav-link" href="#">Courses</a>
-              <a className="nav-link active" href="#" style={{ color: PRIMARY_COLOR }}>Resources</a>
-              <a className="nav-link" href="#">Community</a>
-            </nav>
-            <div className="user-controls">
-              <button className="dark-mode-toggle-icon-button">
-                {/* Placeholder for Icon (Material Symbols) */}
-                <span className="material-symbols-outlined icon-lg">dark_mode</span>
-              </button>
-              <img
-                className="user-avatar"
-                src="https://lh3.googleusercontent.com/aida-public/AB6AXuAfk2rFVv5XShW8YoRysujKcZMjEC2kY-wxxxYI46A7FdNrpNeIlLe9_4gRVaCRzfq3HHr8722BIqeCID2sJOMVWNkSQOhSshtuMlik4urxl4PlPe_jYA3-WE5iispDu0ql8dTsKgaKtDV-6NHwjQUk2hs2aV2V1JhOuG8Ujns15WbhFViAulcwT4_-4Dv4mVENNfPznDv_HnqoG8GpdaHI829XlsRPXG0RHYTtOW1k_N7OjGx9Sk2j8mLY7qy3PMBZbKRQqe5RmWZ6"
-                alt="User avatar"
-                onError={(e) => { e.target.onerror = null; e.target.src="https://placehold.co/40x40/C8A2C8/FFFFFF?text=User" }}
-              />
+    <DashboardLayout>
+      <div className="page-shell">
+        <div className="page-header">
+          <div>
+            <p className="eyebrow">Resources</p>
+            <h1 className="page-title">Resources & Support</h1>
+            <p className="page-subtitle">Find trusted guides, tools, and support services in one place.</p>
+          </div>
+          <div className="header-actions">
+            <button className="chip-button" onClick={() => setSelectedCategory(null)}>
+              <Filter size={14} /> Clear filters
+            </button>
+          </div>
+        </div>
+
+        <div className="page-grid">
+          <div className="main-column">
+            <div className="card">
+              <div className="card-header">
+                <div className="card-title-row">
+                  <BookOpen size={20} />
+                  <h2 className="card-title">Educational Resources</h2>
+                </div>
+              </div>
+
+              <div className="pill-row">
+                <button
+                  className={`pill ${!selectedCategory ? 'pill-active' : ''}`}
+                  onClick={() => setSelectedCategory(null)}
+                >
+                  All resources
+                </button>
+                {resourceCategories.map((cat) => (
+                  <button
+                    key={cat.id}
+                    className={`pill ${selectedCategory === cat.name ? 'pill-active' : ''}`}
+                    onClick={() => setSelectedCategory(cat.name)}
+                  >
+                    {cat.name}
+                  </button>
+                ))}
+              </div>
+
+              <div className="resources-grid">
+                {filteredResources.map((resource) => (
+                  <article key={resource.id} className="resource-card">
+                    <div className="resource-top">
+                      <span className="resource-icon">
+                        {resource.type === 'Video' && <PlayCircle size={18} />}
+                        {resource.type === 'PDF' && <FileText size={18} />}
+                        {resource.type !== 'Video' && resource.type !== 'PDF' && <Link2 size={18} />}
+                      </span>
+                      <span className="type-badge">{resource.type}</span>
+                    </div>
+                    <h3 className="resource-title">{resource.title}</h3>
+                    <p className="resource-description">{resource.description}</p>
+                    <a href={resource.url} target="_blank" rel="noreferrer" className="resource-link">
+                      Open resource <ArrowUpRight size={14} />
+                    </a>
+                  </article>
+                ))}
+              </div>
+            </div>
+          </div>
+
+          <div className="side-column">
+            <div className="card">
+              <div className="card-title-row">
+                <Heart size={18} />
+                <h3 className="card-title">Support Services</h3>
+              </div>
+              <ul className="support-list">
+                <li className="support-item">
+                  <Users size={16} />
+                  <div>
+                    <p className="support-title">Counseling & Mental Health</p>
+                    <p className="support-text">Connect with licensed therapists specializing in HIV-related topics.</p>
+                  </div>
+                </li>
+                <li className="support-item">
+                  <Phone size={16} />
+                  <div>
+                    <p className="support-title">24/7 Helpline</p>
+                    <p className="support-text">Confidential support anytime. Dial 1-800-555-HELP.</p>
+                  </div>
+                </li>
+                <li className="support-item">
+                  <MessageSquare size={16} />
+                  <div>
+                    <p className="support-title">Online Support Groups</p>
+                    <p className="support-text">Join moderated peer groups to share and learn from others.</p>
+                  </div>
+                </li>
+              </ul>
+            </div>
+
+            <div className="card">
+              <div className="card-title-row">
+                <Link2 size={18} />
+                <h3 className="card-title">Reputable Organizations</h3>
+              </div>
+              <ul className="org-list">
+                {organizationLinks.map((org) => (
+                  <li key={org.name} className="org-item">
+                    <a className="org-link" href={org.url || '#'} target="_blank" rel="noreferrer">
+                      <span>{org.name}</span>
+                      <ArrowUpRight size={14} />
+                    </a>
+                  </li>
+                ))}
+              </ul>
             </div>
           </div>
         </div>
-      </header>
-
-      {/* Main Content */}
-      <main className="main-content-area">
-        <div className="content-wrapper">
-          <div className="hero-section">
-            <h1 className="hero-title">
-              Resources & Support
-            </h1>
-            <p className="hero-subtitle">
-              Your central hub for finding testing centers, support services, and reliable information.
-            </p>
-          </div>
-
-          <div className="main-grid-layout">
-            {/* Left Content (Main Cards) */}
-            <div className="main-cards-column">
-              
-              {/* HIV Testing Centers */}
-              <div className="card">
-                <h2 className="card-title">Find an HIV Testing Center</h2>
-                <div className="relative">
-                  <input
-                    className="search-input"
-                    placeholder="Enter your city, state, or ZIP code"
-                    type="text"
-                  />
-                  <span className="material-symbols-outlined search-icon">
-                    search
-                  </span>
-                </div>
-
-                <div className="testing-center-list">
-                  
-                  {/* Center 1 */}
-                  <div className="center-item">
-                    <div>
-                      <h3 className="center-name">Downtown Community Clinic</h3>
-                      <p className="center-address">123 Wellness Ave, San Francisco, CA 94102</p>
-                      <span className="status-badge status-open">
-                        <span className="status-dot status-dot-open"></span>
-                        Open Today
-                      </span>
-                    </div>
-                    <a className="directions-link" href="#" style={{ color: PRIMARY_COLOR }}>
-                      <span>Get Directions</span>
-                      <span className="material-symbols-outlined directions-icon">arrow_forward</span>
-                    </a>
-                  </div>
-
-                  {/* Center 2 */}
-                  <div className="center-item">
-                    <div>
-                      <h3 className="center-name">Oakside Health Services</h3>
-                      <p className="center-address">456 Care St, Oakland, CA 94607</p>
-                      <span className="status-badge status-closed">
-                        <span className="status-dot status-dot-closed"></span>
-                        Closed Today
-                      </span>
-                    </div>
-                    <a className="directions-link" href="#" style={{ color: PRIMARY_COLOR }}>
-                      <span>Get Directions</span>
-                      <span className="material-symbols-outlined directions-icon">arrow_forward</span>
-                    </a>
-                  </div>
-                </div>
-              </div>
-
-              {/* FAQs */}
-              <div className="card">
-                <h2 className="card-title">Frequently Asked Questions</h2>
-                <div className="faq-list">
-                  
-                  {/* FAQ 1 */}
-                  <details className="faq-item">
-                    <summary className="faq-summary">
-                      <span className="faq-question">
-                        How accurate are rapid HIV tests?
-                      </span>
-                      <span className="material-symbols-outlined faq-arrow">expand_more</span>
-                    </summary>
-                    <p className="faq-answer">
-                      Rapid antibody tests are highly accurate, but they require a window period (usually 3-12 weeks) after exposure for antibodies to develop. A follow-up test is sometimes needed to confirm a preliminary positive result.
-                    </p>
-                  </details>
-
-                  {/* FAQ 2 */}
-                  <details className="faq-item">
-                    <summary className="faq-summary">
-                      <span className="faq-question">
-                        Is PrEP the right choice for me?
-                      </span>
-                      <span className="material-symbols-outlined faq-arrow">expand_more</span>
-                    </summary>
-                    <p className="faq-answer">
-                      PrEP (Pre-Exposure Prophylaxis) is a highly effective prevention tool for individuals at ongoing high risk for HIV. It's best to consult with a healthcare provider to discuss your specific situation, potential side effects, and required follow-up care.
-                    </p>
-                  </details>
-
-                  {/* FAQ 3 */}
-                  <details className="faq-item no-border">
-                    <summary className="faq-summary">
-                      <span className="faq-question">
-                        What should I do if I think I've been exposed to HIV?
-                      </span>
-                      <span className="material-symbols-outlined faq-arrow">expand_more</span>
-                    </summary>
-                    <p className="faq-answer">
-                      If you believe you've been exposed to HIV within the last 72 hours, you should seek medical care immediately to ask about PEP (Post-Exposure Prophylaxis). PEP is an emergency medication that can prevent HIV infection if started quickly.
-                    </p>
-                  </details>
-                </div>
-              </div>
-            </div>
-
-            {/* Right Sidebar */}
-            <div className="sidebar-column">
-              
-              {/* Support Services */}
-              <div className="card">
-                <h3 className="sidebar-title">Support Services</h3>
-                <ul className="support-list">
-                  <li className="support-item">
-                    <span className="material-symbols-outlined support-icon" style={{ color: SECONDARY_COLOR }}>diversity_3</span>
-                    <div>
-                      <h4 className="support-heading">Counseling & Mental Health</h4>
-                      <p className="support-text">
-                        Connect with licensed therapists specializing in HIV-related issues.
-                      </p>
-                    </div>
-                  </li>
-                  <li className="support-item">
-                    <span className="material-symbols-outlined support-icon" style={{ color: SECONDARY_COLOR }}>phone_in_talk</span>
-                    <div>
-                      <h4 className="support-heading">24/7 National Helpline</h4>
-                      <p className="support-text">
-                        Confidential support is just a call away. Dial 1-800-555-HELP.
-                      </p>
-                    </div>
-                  </li>
-                  <li className="support-item">
-                    <span className="material-symbols-outlined support-icon" style={{ color: SECONDARY_COLOR }}>forum</span>
-                    <div>
-                      <h4 className="support-heading">Online Support Groups</h4>
-                      <p className="support-text">
-                        Join our community forums to share and learn from others.
-                      </p>
-                    </div>
-                  </li>
-                </ul>
-              </div>
-
-              {/* Reputable Organizations */}
-              <div className="card">
-                <h3 className="sidebar-title">Reputable Organizations</h3>
-                <ul className="org-list">
-                  <li className="org-item">
-                    <a className="org-link" href="#" style={{ color: PRIMARY_COLOR }}>
-                      <span className="org-name">Centers for Disease Control (CDC) - HIV</span>
-                      <span className="material-symbols-outlined org-arrow">arrow_forward</span>
-                    </a>
-                  </li>
-                  <li className="org-item">
-                    <a className="org-link" href="#" style={{ color: PRIMARY_COLOR }}>
-                      <span className="org-name">World Health Organization (WHO) - HIV</span>
-                      <span className="material-symbols-outlined org-arrow">arrow_forward</span>
-                    </a>
-                  </li>
-                  <li className="org-item">
-                    <a className="org-link" href="#" style={{ color: PRIMARY_COLOR }}>
-                      <span className="org-name">The Trevor Project</span>
-                      <span className="material-symbols-outlined org-arrow">arrow_forward</span>
-                    </a>
-                  </li>
-                  <li className="org-item">
-                    <a className="org-link" href="#" style={{ color: PRIMARY_COLOR }}>
-                      <span className="flex-1">amfAR, The Foundation for AIDS Research</span>
-                      <span className="material-symbols-outlined org-arrow">arrow_forward</span>
-                    </a>
-                  </li>
-                </ul>
-              </div>
-            </div>
-          </div>
-        </div>
-      </main>
-    </div>
+      </div>
+    </DashboardLayout>
   );
 };
+
+const organizationLinks = [
+  { name: 'CDC – HIV', url: 'https://www.cdc.gov/hiv' },
+  { name: 'WHO – HIV', url: 'https://www.who.int/health-topics/hiv-aids' },
+  { name: 'The Trevor Project', url: 'https://www.thetrevorproject.org' },
+  { name: 'amfAR', url: 'https://www.amfar.org' },
+];
 
 export default ResourceDirectory;

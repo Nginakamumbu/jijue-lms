@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import DashboardLayout from "../layouts/DashboardLayout";
 import { Search } from "lucide-react";
 import "./CourseCatalog.css";
 
 const CourseCatalog = () => {
+  const navigate = useNavigate();
   const [courses, setCourses] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -42,6 +44,10 @@ const CourseCatalog = () => {
     const matchesCategory = selectedCategory === "All Categories" || course.category === selectedCategory;
     return matchesSearch && matchesCategory;
   });
+
+  const handleStartCourse = (courseId) => {
+    navigate(`/course/${courseId}`);
+  };
 
   return (
     <DashboardLayout>
@@ -100,7 +106,10 @@ const CourseCatalog = () => {
                 </div>
                 <p className="course-description">{course.description}</p>
                 <div className="course-card-footer">
-                  <button className="course-action-button button-primary">
+                  <button 
+                    className="course-action-button button-primary"
+                    onClick={() => handleStartCourse(course.id)}
+                  >
                     Start Course
                   </button>
                 </div>

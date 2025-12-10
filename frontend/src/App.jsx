@@ -8,6 +8,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import LandingPage from "./pages/LandingPage.jsx";
 import LoginPage from "./pages/LoginPage.jsx";
 import RegisterPage from "./pages/RegisterPage.jsx";
+import LogoutPage from "./pages/LogoutPage.jsx";
 import Dashboard from "./pages/Dashboard.jsx";
 import CourseCatalog from "./pages/CourseCatalog.jsx";
 import MyCoursesPage from "./pages/MyCoursesPage.jsx";
@@ -18,6 +19,7 @@ import CommunityForum from "./pages/CommunityForum.jsx";
 import MediaLibrary from "./pages/MediaLibrary.jsx";
 import ResourcesDirectory from "./pages/ResourcesDirectory.jsx";
 import Statistics from "./pages/Statistics.jsx";
+import Settings from "./pages/Settings.jsx";
 
 export default function App() {
   return (
@@ -39,9 +41,9 @@ export default function App() {
         <Route path="/resources" element={<ResourcesDirectory />} />
         <Route path="/stats" element={<Statistics />} />
 
-          {/* User/Dashboard Routes */}
+        {/* User/Dashboard Routes */}
         <Route path="/help" element={<CommunityForum />} />
-        <Route path="/logout" element={<LandingPage />} />
+        <Route path="/logout" element={<LogoutPage />} />
       </Routes>
     </BrowserRouter>
   );

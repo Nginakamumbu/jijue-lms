@@ -1,52 +1,26 @@
-@import url('https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Poppins:wght@400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=DM+Serif+Display:wght@400&family=Inter:wght@400;500;600;700;800&display=swap');
 
 /* --- Global Reset for Full Screen Coverage --- */
-/* Ensure the html, body, and the main React root element take up 
-   the full viewport and prevent accidental horizontal scrolling. */
 html, body, #root {
     margin: 0;
     padding: 0;
     width: 100%;
     height: 100%;
-    overflow-x: hidden; /* This is key to prevent horizontal scroll issues */
-}
-
-/* --- Font Imports --- */
-
-/* --- Color Variables & Fonts --- */
-:root {
-  /* Colors based on CUSTOMSTYLES constant */
-  --color-primary-default: #C895FF; /* Purple */
-  --color-blue-500: #3B82F6; /* Logo Blue */
-
-  /* Light Theme Colors */
-  --color-bg-light: #FFFFFF;
-  --color-text-light: #1F2937;
-  --color-text-dark-header: #FFFFFF;
-  --color-secondary-btn-bg: #E5E7EB; /* slate-200 */
-}
-
-/* Dark Mode Variables (Synced with .dark-mode class) */
-.dark-mode {
-  --color-bg-dark: #121212;
-  --color-text-dark: #FFFFFF;
-  --color-secondary-btn-bg: #E5E7EB; /* Keep light for contrast on dark buttons */
+    overflow-x: hidden;
 }
 
 /* --- Base/Utility Styles --- */
-
 .app-root-container {
-    font-family: 'Poppins', sans-serif;
+    font-family: 'Inter', sans-serif;
 }
 
 .landing-page-container {
     position: relative;
-    /* --- FIX: Ensure container spans the full viewport width --- */
-    width: 100vw; 
+    width: 100vw;
     min-height: 100vh;
     -webkit-font-smoothing: antialiased;
-    color: var(--color-text-light); /* Default light text */
-    background-color: var(--color-bg-light); /* Default light background */
+    color: var(--color-text-light);
+    background-color: var(--color-bg-light);
     transition: background-color 0.3s ease, color 0.3s ease;
 }
 .dark-mode .landing-page-container {
@@ -54,10 +28,9 @@ html, body, #root {
     background-color: var(--color-bg-dark);
 }
 
-.icon-lg { width: 1.5rem; height: 1.5rem; } /* w-6 h-6 */
+.icon-lg { width: 1.5rem; height: 1.5rem; }
 
 /* --- Background and Overlay --- */
-
 .background-image-container {
     position: absolute;
     inset: 0;
@@ -74,7 +47,6 @@ html, body, #root {
     position: absolute;
     inset: 0;
     z-index: 1;
-    content: "";
     transition: background 0.3s ease-in-out;
 }
 

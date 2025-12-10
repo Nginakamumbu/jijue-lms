@@ -59,7 +59,7 @@ export default function DashboardLayout({ children }) {
                 toggleDarkMode={toggleDarkMode}
                 isDarkMode={isDarkMode}
             />
-            <main style={{ flex: 1, width: '100%', overflowY: 'auto' }}>
+            <main className="main-content" style={{ flex: 1, overflowY: 'auto' }}>
                 {children}
             </main>
         </div>

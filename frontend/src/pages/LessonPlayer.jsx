@@ -1,11 +1,13 @@
 import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import DashboardLayout from "../layouts/DashboardLayout";
+import ProgressRing from "../components/ProgressRing";
 import { ArrowLeft, CheckCircle, PlayCircle, Circle } from 'lucide-react';
 import './LessonPlayer.css';
 
 const PRIMARY_COLOR = "#A569BD";
 const API_BASE_URL = 'http://localhost:8000';
+const CURRENT_USER_ID = 2; // Alex Johnson's user ID
 
 export default function LessonPlayer() {
   const { courseId, lessonId } = useParams();
@@ -13,13 +15,16 @@ export default function LessonPlayer() {
   const [lesson, setLesson] = useState(null);
   const [module, setModule] = useState(null);
   const [course, setCourse] = useState(null);
+  const [moduleProgress, setModuleProgress] = useState(null);
+  const [lessonProgress, setLessonProgress] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [isCompleted, setIsCompleted] = useState(false);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
     const fetchLessonData = async () => {
       try {
         setLoading(true);
+        setError(null);
         
         // Fetch lesson details
         const lessonRes = await fetch(`${API_BASE_URL}/api/lessons/${lessonId}`);
@@ -39,20 +44,70 @@ export default function LessonPlayer() {
         const courseData = await courseRes.json();
         setCourse(courseData);
         
+        // Fetch lesson progress
+        const progressRes = await fetch(
+          `${API_BASE_URL}/api/users/${CURRENT_USER_ID}/lesson-progress/${lessonId}`
+        );
+        if (progressRes.ok) {
+          const progressData = await progressRes.json();
+          setLessonProgress(progressData);
+        }
+        
+        // Fetch module progress
+        const moduleProgressRes = await fetch(
+          `${API_BASE_URL}/api/users/${CURRENT_USER_ID}/module-progress/${lessonData.module_id}`
+        );
+        if (moduleProgressRes.ok) {
+          const moduleProgressData = await moduleProgressRes.json();
+          setModuleProgress(moduleProgressData);
+        }
+        
       } catch (error) {
         console.error('Error fetching lesson data:', error);
+        setError(error.message);
       } finally {
         setLoading(false);
       }
     };
 
-    if (lessonId) {
+    if (lessonId && courseId) {
       fetchLessonData();
     }
   }, [lessonId, courseId]);
 
-  const handleMarkComplete = () => {
-    setIsCompleted(!isCompleted);
+  const handleMarkComplete = async () => {
+    try {
+      const newStatus = lessonProgress?.progress_percentage === 100 ? 0 : 100;
+      const newLessonStatus = newStatus === 100 ? "completed" : "in_progress";
+      
+      const response = await fetch(
+        `${API_BASE_URL}/api/users/${CURRENT_USER_ID}/lesson-progress/${lessonId}`,
+        {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            status: newLessonStatus,
+            progress_percentage: newStatus
+          })
+        }
+      );
+      
+      if (response.ok) {
+        const updatedProgress = await response.json();
+        setLessonProgress(updatedProgress);
+        
+        // Refresh module progress
+        const moduleProgressRes = await fetch(
+          `${API_BASE_URL}/api/users/${CURRENT_USER_ID}/module-progress/${module?.id}`
+        );
+        if (moduleProgressRes.ok) {
+          const moduleProgressData = await moduleProgressRes.json();
+          setModuleProgress(moduleProgressData);
+        }
+      }
+    } catch (error) {
+      console.error('Error updating lesson progress:', error);
+    }
   };
 
   if (loading) {
@@ -65,11 +120,11 @@ export default function LessonPlayer() {
     );
   }
 
-  if (!lesson || !module || !course) {
+  if (error || !lesson || !module || !course) {
     return (
       <DashboardLayout>
         <div style={{ padding: '2rem', textAlign: 'center' }}>
-          <p>Lesson not found.</p>
+          <p>{error || 'Lesson not found.'}</p>
           <button 
             onClick={() => navigate('/courses')} 
             style={{ 
@@ -88,6 +143,8 @@ export default function LessonPlayer() {
       </DashboardLayout>
     );
   }
+
+  const isCompleted = lessonProgress?.progress_percentage === 100;
 
   return (
     <DashboardLayout>
@@ -126,7 +183,16 @@ export default function LessonPlayer() {
               marginBottom: '2rem',
               overflow: 'hidden'
             }}>
-              <PlayCircle size={64} color="#fff" />
+              <iframe
+                width="100%"
+                height="100%"
+                src={lesson.content?.replace('watch?v=', 'embed/')}
+                title={lesson.title}
+                frameBorder="0"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                allowFullScreen
+                style={{ borderRadius: '0.75rem' }}
+              />
             </div>
 
             {/* Lesson Content */}
@@ -176,7 +242,7 @@ export default function LessonPlayer() {
                 borderLeft: `4px solid ${PRIMARY_COLOR}`
               }}>
                 <h3 style={{ marginBottom: '1rem', color: 'var(--text-primary, #111)' }}>
-                  Lesson Content
+                  About This Lesson
                 </h3>
                 <p style={{
                   whiteSpace: 'pre-wrap',
@@ -184,7 +250,7 @@ export default function LessonPlayer() {
                   lineHeight: '1.6',
                   color: 'var(--text-primary, #111)'
                 }}>
-                  {lesson.content}
+                  {lesson.content || 'No additional content available.'}
                 </p>
               </div>
 
@@ -201,11 +267,12 @@ export default function LessonPlayer() {
                     fontWeight: '600',
                     display: 'flex',
                     alignItems: 'center',
-                    gap: '0.5rem'
+                    gap: '0.5rem',
+                    transition: 'background-color 0.2s'
                   }}
                 >
                   {isCompleted ? <CheckCircle size={18} /> : <Circle size={18} />}
-                  {isCompleted ? 'Completed' : 'Mark as Complete'}
+                  {isCompleted ? 'Completed ✓' : 'Mark as Complete'}
                 </button>
               </div>
             </div>
@@ -213,6 +280,36 @@ export default function LessonPlayer() {
 
           {/* Sidebar */}
           <div>
+            {/* Module Progress */}
+            {moduleProgress && (
+              <div style={{
+                backgroundColor: 'var(--bg-card, #fff)',
+                padding: '1.5rem',
+                borderRadius: '0.75rem',
+                marginBottom: '1.5rem',
+                textAlign: 'center'
+              }}>
+                <h3 style={{
+                  fontSize: '0.9rem',
+                  fontWeight: '600',
+                  marginBottom: '1rem',
+                  color: 'var(--text-primary, #111)',
+                  textTransform: 'uppercase',
+                  letterSpacing: '0.5px'
+                }}>
+                  Module Progress
+                </h3>
+                <ProgressRing percentage={moduleProgress.progress_percentage} />
+                <p style={{
+                  fontSize: '0.85rem',
+                  color: 'var(--text-secondary, #666)',
+                  marginTop: '1rem'
+                }}>
+                  {moduleProgress.completed_lessons} of {moduleProgress.total_lessons} lessons completed
+                </p>
+              </div>
+            )}
+
             {/* Module Lessons */}
             <div style={{
               backgroundColor: 'var(--bg-card, #fff)',

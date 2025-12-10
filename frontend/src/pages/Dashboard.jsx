@@ -17,18 +17,60 @@ const API_BASE_URL = 'http://localhost:8000'; // Change if your backend runs on 
 
 // --- DEFAULT STATE (for initial render before data loads) ---
 const INITIAL_DASHBOARD_DATA = {
-    userName: "Loading...",
+    userName: "Student",
     progress: 0,
     modulesCompleted: 0,
     totalModules: 4,
-    continueLearning: { moduleTitle: "Loading Module...", description: "", link: "#" },
+    continueLearning: { 
+        moduleTitle: "Module 1: HIV Basics", 
+        description: "Learn the fundamentals of HIV and how it affects the immune system.", 
+        link: "/course/1" 
+    },
     featuredCourses: [
-        { title: 'Introduction to HIV', description: 'Understand the fundamentals of HIV and transmission.', icon: '📚', color: '#A569BD', link: '/course/1' },
-        { title: 'Prevention Strategies', description: 'Learn about prevention: PrEP, PEP, and safe practices.', icon: '🛡️', color: '#58D68D', link: '/course/2' }
+        { 
+            title: 'Introduction to HIV', 
+            description: 'Understand the fundamentals of HIV and transmission.', 
+            icon: 'HeartPulse', 
+            color: 'primary', 
+            link: '/course/1' 
+        },
+        { 
+            title: 'Prevention Strategies', 
+            description: 'Learn about prevention: PrEP, PEP, and safe practices.', 
+            icon: 'Shield', 
+            color: 'secondary', 
+            link: '/course/2' 
+        }
     ],
     quickLinks: [
-        { title: 'Community Forum', description: 'Ask questions and share experiences.', icon: 'MessageSquare', color: 'primary', link: '/forum' },
-        { title: 'Media Library', description: 'Browse videos and resources.', icon: 'PlayCircle', color: 'secondary', link: '/media' }
+        { 
+            title: 'Community Forum', 
+            description: 'Ask questions and share experiences with others.', 
+            icon: 'MessageSquare', 
+            color: 'primary', 
+            link: '/forum' 
+        },
+        { 
+            title: 'Resources', 
+            description: 'Access helpful materials and educational content.', 
+            icon: 'Zap', 
+            color: 'secondary', 
+            link: '/resources' 
+        },
+        { 
+            title: 'My Courses', 
+            description: 'View all courses you are currently enrolled in.', 
+            icon: 'PlayCircle', 
+            color: 'primary', 
+            link: '/my-courses' 
+        },
+        { 
+            title: 'Settings', 
+            description: 'Manage your account preferences and profile.', 
+            icon: 'Settings', 
+            color: 'secondary', 
+            link: '/settings' 
+        }
     ],
     navigation: [
         { name: "Dashboard", icon: "LayoutDashboard", current: true, link: "/dashboard" },
@@ -48,6 +90,16 @@ const iconMap = {
     'MapPin': MapPin
 };
 
+const getInitials = (name = '') => {
+    const trimmed = name.trim();
+    if (!trimmed) return 'U';
+    const parts = trimmed.split(/\s+/);
+    const first = parts[0]?.[0] || '';
+    const second = parts[1]?.[0] || '';
+    const initials = `${first}${second}`.toUpperCase();
+    return initials || trimmed.slice(0, 2).toUpperCase();
+};
+
 export const getIconComponent = (iconName) => iconMap[iconName] || LayoutDashboard;
 
 
@@ -58,22 +110,143 @@ export default function Dashboard() {
     const [isMobileOpen, setIsMobileOpen] = useState(false);
     const [data, setData] = useState(INITIAL_DASHBOARD_DATA);
     const [isLoading, setIsLoading] = useState(true);
+    const [userProgress, setUserProgress] = useState(null);
+    const userInitials = useMemo(() => getInitials(data.userName), [data.userName]);
 
     // --- 1. Data Fetching Effect ---
     useEffect(() => {
         const fetchDashboardData = async () => {
             try {
-                // Ensure the port here matches your FastAPI backend port (e.g., 8000)
-                const response = await fetch(`${API_BASE_URL}/api/dashboard`);
-                if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
+                const token = localStorage.getItem('accessToken');
+                
+                // Fetch user data if logged in
+                if (token) {
+                    const userRes = await fetch(`${API_BASE_URL}/api/v1/users/me`, {
+                        headers: {
+                            'Authorization': `Bearer ${token}`
+                        }
+                    });
+                    
+                    if (userRes.ok) {
+                        const userData = await userRes.json();
+                        setData(prevData => ({
+                            ...prevData,
+                            userName: userData.full_name
+                        }));
+                    }
+                    
+                    // Fetch user's continue learning data
+                    const continueRes = await fetch(`${API_BASE_URL}/api/v1/users/me/continue-learning`, {
+                        headers: {
+                            'Authorization': `Bearer ${token}`
+                        }
+                    });
+                    
+                    if (continueRes.ok) {
+                        const continueData = await continueRes.json();
+                        setUserProgress(continueData);
+                        
+                        // Update the continue learning card with actual data
+                        setData(prevData => ({
+                            ...prevData,
+                            continueLearning: {
+                                moduleTitle: continueData.module_title || "Start your first course",
+                                description: continueData.course_title || "No courses yet",
+                                link: continueData.link || "/course/1",
+                                courseId: continueData.course_id,
+                                isStarted: continueData.status === 'in_progress'
+                            }
+                        }));
+                    }
                 }
-                const fetchedData = await response.json();
-                setData(fetchedData);
+                
+                // Fetch courses for featured courses section
+                const coursesRes = await fetch(`${API_BASE_URL}/api/courses`);
+                let featuredCourses = INITIAL_DASHBOARD_DATA.featuredCourses;
+                if (coursesRes.ok) {
+                    const courses = await coursesRes.json();
+                    // Use first 2 courses as featured
+                    featuredCourses = courses.slice(0, 2).map(course => ({
+                        title: course.title,
+                        description: course.description,
+                        icon: course.icon,
+                        color: course.color,
+                        link: `/course/${course.id}`
+                    }));
+                }
+                
+                // Fetch quick links - combine forum and resources
+                const forumRes = await fetch(`${API_BASE_URL}/api/forum/categories`);
+                const resourcesRes = await fetch(`${API_BASE_URL}/api/resources/categories`);
+                
+                let quickLinks = INITIAL_DASHBOARD_DATA.quickLinks;
+                
+                if (forumRes.ok && resourcesRes.ok) {
+                    const forumCategories = await forumRes.json();
+                    const resourceCategories = await resourcesRes.json();
+                    
+                    quickLinks = [
+                        {
+                            title: 'Community Forum',
+                            description: `${forumCategories.length || 5} discussion categories`,
+                            icon: 'MessageSquare',
+                            color: 'primary',
+                            link: '/forum'
+                        },
+                        {
+                            title: 'Resources',
+                            description: `${resourceCategories.length || 4} resource categories`,
+                            icon: 'Zap',
+                            color: 'secondary',
+                            link: '/resources'
+                        },
+                        {
+                            title: 'My Courses',
+                            description: 'View your enrolled courses',
+                            icon: 'PlayCircle',
+                            color: 'primary',
+                            link: '/my-courses'
+                        },
+                        {
+                            title: 'Settings',
+                            description: 'Manage your preferences',
+                            icon: 'Settings',
+                            color: 'secondary',
+                            link: '/settings'
+                        }
+                    ];
+                }
+                
+                // Fetch first course for continue learning
+                const firstCourseRes = await fetch(`${API_BASE_URL}/api/courses/1`);
+                let continueLearning = INITIAL_DASHBOARD_DATA.continueLearning;
+                if (firstCourseRes.ok) {
+                    const courseData = await firstCourseRes.json();
+                    if (courseData.modules && courseData.modules.length > 0) {
+                        const firstModule = courseData.modules[0];
+                        continueLearning = {
+                            moduleTitle: firstModule.title,
+                            description: firstModule.description,
+                            link: `/course/1`
+                        };
+                    }
+                }
+                
+                setData(prevData => {
+                    const existingContinue = prevData.continueLearning;
+                    const useExistingContinue = existingContinue && existingContinue.link && existingContinue.link !== '/courses';
+
+                    return {
+                        ...prevData,
+                        featuredCourses,
+                        quickLinks,
+                        continueLearning: useExistingContinue ? existingContinue : continueLearning
+                    };
+                });
+                
             } catch (error) {
                 console.error("Could not fetch dashboard data:", error);
-                // Fallback to initial data if fetch fails
-                setData(INITIAL_DASHBOARD_DATA); 
+                // Keep the initial data if fetch fails
             } finally {
                 setIsLoading(false);
             }
@@ -139,31 +312,29 @@ export default function Dashboard() {
                     
                     {/* Header Bar */}
                     <header className="header-bar">
-                        <div className="welcome-section">
-                            <button className="mobile-menu-btn icon-btn" onClick={() => setIsMobileOpen(true)}>
-                                <Menu className="icon-lg" />
-                            </button>
-                            <div>
-                                <h1 className="welcome-title">Welcome Back, {data.userName}!</h1> 
-                                <p className="welcome-message">You are making great progress. Keep it up!</p>
-                            </div>
+                        <div>
+                            <h1 className="welcome-title">Welcome Back, {data.userName}!</h1> 
+                            <p className="welcome-message">You are making great progress. Keep it up!</p>
                         </div>
 
                         <div className="user-actions">
-                            <button className="icon-btn">
+                            <button className="icon-btn" aria-label="Open notifications">
                                 <Bell className="icon-lg" />
                             </button>
                             <button 
                                 className="icon-btn dark-mode-toggle-desktop"
                                 onClick={toggleDarkMode}
+                                aria-label={isDarkMode ? 'Switch to light mode' : 'Switch to dark mode'}
                             >
                                 {isDarkMode ? <Sun className="icon-lg" /> : <Moon className="icon-lg" />}
                             </button>
-                            <img 
-                                alt="User avatar" 
-                                className="user-avatar" 
-                                src="https://placehold.co/48x48/A569BD/FFFFFF?text=A.X."
-                            />
+                            <div 
+                                className="user-avatar user-avatar-initials" 
+                                aria-label={`User avatar for ${data.userName}`}
+                                title={data.userName}
+                            >
+                                {userInitials}
+                            </div>
                         </div>
                     </header>
                     
@@ -183,7 +354,7 @@ export default function Dashboard() {
                                         <h2 className="continue-card-title">{data.continueLearning.moduleTitle}</h2>
                                         <p className="continue-card-description">{data.continueLearning.description}</p>
                                         <a className="continue-button" href={data.continueLearning.link}>
-                                            Start
+                                            {data.continueLearning.isStarted ? 'Continue' : 'Start'}
                                         </a>
                                     </div>
                                 </div>
